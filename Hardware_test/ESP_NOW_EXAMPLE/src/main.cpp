@@ -12,13 +12,15 @@ Code này dùng đẻ gửi hoặc nhận giữa 2 board esp
 #define SENDER
 
 //2 cái thư viện của esp8266 và esp32 khác nhau cách sài nhé .... ghét thiệt
+
 #include <Arduino.h>
+
 #ifdef ESP8266
-#include <ESP8266WiFi.h>
-#include <espnow.h>
+    #include <ESP8266WiFi.h>
+    #include <espnow.h>
 #elif ESP32
-#include <WiFi.h>
-#include <esp_now.h>
+    #include <WiFi.h>
+    #include <esp_now.h>
 #endif
 
 //Structure example to receive data
@@ -106,9 +108,6 @@ test_struct myData;
         }
         }
     #else
-        //Create a struct_message called myData
-        
-
         //callback function that will be executed when data is received
         void OnDataRecv(uint8_t * mac, uint8_t *incomingData, uint8_t len) {
             // In dia chi mac nhan duoc 
