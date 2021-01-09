@@ -1,4 +1,4 @@
-## <b>Todo:</b>
+<!-- ## <b>Todo:</b>
 ### esp32 hiện có 3 cách giao tiếp
 1. WIFI host/ client thông qua router  (lượng data lớn, tốn điện nên bỏ) 
 2. BLE (bluetooth low energy) (lượng data nhỏ, ít tốn điện)
@@ -10,4 +10,8 @@
 - BLE MESH
 https://www.youtube.com/watch?v=GG8JtFNiHw0 thấy cũng được đó :v nhưng không thấy nhận mà chỉ gửi nhanh thôi 
 - BLE BOARDCAST (chưa rõ nhiều cái boardcast sẽ sảy ra chuyện gì)
-<br/> Dựa trên 2 chuẩn protocal là GAP và GATT. doc: https://www.espressif.com/sites/default/files/documentation/esp32_bluetooth_architecture_en.pdf 
+<br/> Dựa trên 2 chuẩn protocal là GAP và GATT. doc: https://www.espressif.com/sites/default/files/documentation/esp32_bluetooth_architecture_en.pdf  -->
+
+- ESP_NOW_EXAMPLE: mẫu code sử dụng espnow cho esp8266 và esp32
+</br> </br>
+- ESP_NOW_LIMIT_TEST: thử nghiệm cần làm sắp tới để đánh giá protocal esp-now 
