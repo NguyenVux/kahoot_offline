@@ -21,6 +21,6 @@
 -
 
 ## **Documents**
-1. 
+1. [https://github.com/NguyenVux/kahoot_offline/blob/main/Hardware_test/README_AGAIN.md] HardWare readme
 2. 
 3. 
