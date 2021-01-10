@@ -15,3 +15,5 @@ https://www.youtube.com/watch?v=GG8JtFNiHw0 thấy cũng được đó :v nhưng
 - ESP_NOW_EXAMPLE: mẫu code sử dụng espnow cho esp8266 và esp32
 </br> </br>
 - ESP_NOW_LIMIT_TEST: thử nghiệm cần làm sắp tới để đánh giá protocal esp-now 
+</br> </br>
+- KahootV1.0: Phiên bản đâu tiên
