@@ -16,4 +16,6 @@ https://www.youtube.com/watch?v=GG8JtFNiHw0 thấy cũng được đó :v nhưng
 </br> </br>
 - ESP_NOW_LIMIT_TEST: thử nghiệm cần làm sắp tới để đánh giá protocal esp-now 
 </br> </br>
-- KahootV1.0: Phiên bản đâu tiên
+- KahootV1.0: Phiên bản đâu tiên </br>
+  Note: node hiện chỉ cần dev để ngủ trong chế độ Light-sleep </br>
+   khi tắt (bấm nút kiểu gì đó) thì chuyển sang Deep-sleep nhưng sẽ cần mạch ngoài để có thể trở lại workmode !!!
