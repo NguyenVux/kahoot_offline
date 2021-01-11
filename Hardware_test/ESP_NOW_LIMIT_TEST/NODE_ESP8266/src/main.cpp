@@ -16,7 +16,7 @@ Code này dùng để test số lượng node mà esp8266/esp32 có thể nhận
 #define LED_ON digitalWrite(LED, LOW)
 #define LED_OFF digitalWrite(LED, HIGH)
 
-#define CHANNEL 4
+#define CHANNEL 9
 
 unsigned long lastTime = 0;  
 unsigned long timerDelay = 2000;  //send readings timer
@@ -76,6 +76,11 @@ void OnDataRecv(uint8_t * mac, uint8_t *incomingData, uint8_t len) {
 void setup() {
   //Initialize Serial Monitor
   Serial.begin(115200);
+  //xoá các config cũ trong ESP !!!
+  WiFi.disconnect();//will erase ssid/password
+  delay(2000);
+  ESP.eraseConfig();
+
   pinMode(LED, OUTPUT); // set the digital pin as output.
   //Set device as a Wi-Fi Station
   WiFi.mode(WIFI_STA);
