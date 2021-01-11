@@ -13,8 +13,10 @@ Code này dùng để test số lượng node mà esp8266/esp32 có thể nhận
 #include <ESP8266WiFi.h>
 #include <espnow.h>
 #define LED 2
+#define LED_ON digitalWrite(LED, LOW)
+#define LED_OFF digitalWrite(LED, HIGH)
 
-#define CHANNEL 10
+#define CHANNEL 4
 
 unsigned long lastTime = 0;  
 unsigned long timerDelay = 2000;  //send readings timer
@@ -29,7 +31,7 @@ test_struct myData;
 uint8_t broadcastAddress[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 
 void OnDataSent(uint8_t *mac_addr, uint8_t sendStatus) {
-  digitalWrite(LED, HIGH);
+  //digitalWrite(LED, HIGH);
     Serial.print("Last Packet Send Status: ");
     if (sendStatus == 0){
       Serial.println("Delivery success");
@@ -37,12 +39,15 @@ void OnDataSent(uint8_t *mac_addr, uint8_t sendStatus) {
     else{
       Serial.println("Delivery fail");
     }
-    digitalWrite(LED, LOW);
+    //digitalWrite(LED, LOW);
 }
+
+unsigned long led_blink_ms = 0;
+#define LED_BLINK_DELAY 1000
 
 //callback function that will be executed when data is received
 void OnDataRecv(uint8_t * mac, uint8_t *incomingData, uint8_t len) {
-    digitalWrite(LED, HIGH);
+    //digitalWrite(LED, HIGH);
     // In dia chi mac nhan duoc 
     char macStr[18];
     Serial.print("MacFrom");
@@ -51,19 +56,21 @@ void OnDataRecv(uint8_t * mac, uint8_t *incomingData, uint8_t len) {
     Serial.print(macStr);
     
     memcpy(&myData, incomingData, sizeof(myData));
-    Serial.print("Bytes received: ");
+    Serial.print("\nBytes received: ");
     Serial.println(len);
     Serial.print("x: ");
     Serial.println(myData.x);
     Serial.print("y: ");
     Serial.println(myData.y);
     Serial.println();
-    // after timerDelay esp_now_send will trigger 
-    //check if that is info from host 
-    if(myData.x==0 && myData.y == 0)
-        // lastTime = millis();
-         sendit = false;
+    // // after timerDelay esp_now_send will trigger 
+    // // check if that is info from host 
+    // if(myData.x==0 && myData.y == 0)
+    //     // lastTime = millis();
+    //      sendit = false;
     digitalWrite(LED, LOW);
+    led_blink_ms = millis();
+    delay(500);
 }
 
 void setup() {
@@ -79,30 +86,28 @@ void setup() {
       return;
   }
   esp_now_set_self_role(ESP_NOW_ROLE_COMBO);
-  esp_now_register_recv_cb(OnDataRecv);
-  esp_now_register_send_cb(OnDataSent);
   //esp8266 do not have encrypt !!!
   esp_now_add_peer(broadcastAddress, ESP_NOW_ROLE_COMBO, CHANNEL, NULL, 0);
+  esp_now_register_send_cb(OnDataSent);
+  esp_now_register_recv_cb(OnDataRecv);
 }
 
-bool sendit = false;
-
+int i = 0;
 void loop() {
-  // if ((millis() - lastTime) == timerDelay) {
-    // Set values to send
-    myData.x = random(1,20);
-    myData.y = random(1,20);
+  if(led_blink_ms > LED_BLINK_DELAY)
+    LED_OFF;
+  // if ((millis() - lastTime) > timerDelay)
+  // {
+  //   // Set values to send
+  //   myData.x = i; //random(0,20);
+  //   myData.y = i; //random(0,20);
+  //   i++;
+  //   // Send message via ESP-NOW
+  //   Serial.println(i);
+  //   esp_now_send(broadcastAddress, (uint8_t *)&myData, sizeof(myData));
+  //   //if NULL then send to all address added by esp_now_add_peer
+  //   // esp_now_send(NULL, (uint8_t *) &myData, sizeof(myData));
 
-    // Send message via ESP-NOW
-    // esp_now_send(broadcastAddress, (uint8_t *) &myData, sizeof(myData));
-    //if NULL then send to all address added by esp_now_add_peer 
-    // but what if all node aslo get ms?
-    if(!sendit)
-    {
-        sendit = true;
-        esp_now_send(NULL, (uint8_t *) &myData, sizeof(myData));
-    }
-
-    // lastTime = millis();
+  //   lastTime = millis();
   // }
 }

@@ -14,7 +14,7 @@ Code này dùng để test số lượng node mà esp8266/esp32 có thể nhận
 #include <esp_now.h>
 
 #define LED 2
-#define CHANNEL 10
+#define CHANNEL 9
 
 //Structure example to receive data
 //Must match the sender structure
@@ -81,29 +81,46 @@ void setup() {
     esp_now_peer_info_t peerInfo;
     peerInfo.channel = CHANNEL;  
     peerInfo.encrypt = false;
-    // register first peer  
     memcpy(peerInfo.peer_addr, broadcastAddress1, 6);
+    // register first peer  
     if (esp_now_add_peer(&peerInfo) != ESP_OK){
         Serial.println("Failed to add peer");
         return;
     }
 
-    delay(2000);
-    //host identify 
-    myData.x = 0; //random(1,20);
-    myData.y = 0; //random(1,20);
+    // delay(2000);
+    // //host identify 
+    // myData.x = 0; //random(1,20);
+    // myData.y = 0; //random(1,20);
     
-    esp_err_t result = esp_now_send(0, (uint8_t *) &myData, sizeof(test_struct));
-    // esp_err_t result = esp_now_send(NULL, (uint8_t *) &myData, sizeof(test_struct));
+    // esp_err_t result = esp_now_send(broadcastAddress1, (uint8_t *) &myData, sizeof(test_struct));
+    // // esp_err_t result = esp_now_send(NULL, (uint8_t *) &myData, sizeof(test_struct));
     
-    if (result == ESP_OK) {
-        Serial.println("Sent with success");
-    }
-    else {
-        Serial.println("Error sending the data");
-    }
+    // if (result == ESP_OK) {
+    //     Serial.println("Sent with success");
+    // }
+    // else {
+    //     Serial.println("Error sending the data");
+    // }
 }
 
-void loop() {
+int i = 0;
+unsigned long lastTime = 0;
+unsigned long timerDelay = 2000; //send readings timer
 
+void loop() {
+    if ((millis() - lastTime) > timerDelay)
+    {
+        // Set values to send
+        myData.x = i; //random(0,20);
+        myData.y = i; //random(0,20);
+        i++;
+        // Send message via ESP-NOW
+        Serial.println(i);
+        esp_now_send(broadcastAddress1, (uint8_t *)&myData, sizeof(myData));
+        //if NULL then send to all address added by esp_now_add_peer
+        // esp_now_send(NULL, (uint8_t *) &myData, sizeof(myData));
+
+        lastTime = millis();
+    }
 }
