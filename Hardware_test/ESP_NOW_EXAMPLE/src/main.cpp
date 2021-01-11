@@ -8,19 +8,21 @@ Code này dùng đẻ gửi hoặc nhận giữa 2 board esp
 
 //uncomment dòng này để lấy địa chỉ mac của host board
 // #define GET_MAC_ADD
-//comment dòng này để nạp cho mạch nhận (HOST)
-#define SENDER
+//comment dòng này để nạp cho mạch gửi (HOST)
+// #define SENDER 
 
 //2 cái thư viện của esp8266 và esp32 khác nhau cách sài nhé .... ghét thiệt
 
 #include <Arduino.h>
-
+#define WIFI_CHANNEL 6
 #ifdef ESP8266
     #include <ESP8266WiFi.h>
     #include <espnow.h>
 #elif ESP32
     #include <WiFi.h>
     #include <esp_now.h>
+    //comment dòng này để nạp cho mạch gửi (HOST)
+    #define SENDER 
 #endif
 
 //Structure example to receive data
@@ -69,7 +71,10 @@ test_struct myData;
         Serial.begin(115200);
         
         // Set device as a Wi-Fi Station
-        WiFi.mode(WIFI_STA);
+        WiFi.softAP("sender", "sendersender", WIFI_CHANNEL, false);
+	    WiFi.mode(WIFI_AP_STA);
+
+        // WiFi.mode(WIFI_STA);
 
         // Init ESP-NOW
         if (esp_now_init() != 0) {
@@ -90,7 +95,7 @@ test_struct myData;
         esp_now_register_send_cb(OnDataSent);
         
         // Register peer
-        esp_now_add_peer(broadcastAddress, ESP_NOW_ROLE_SLAVE, 1, NULL, 0);
+        // esp_now_add_peer(broadcastAddress, ESP_NOW_ROLE_SLAVE, 6, NULL, 0);
         }
         
         void loop() {
@@ -100,14 +105,15 @@ test_struct myData;
             myData.y = random(0,20);
 
             // Send message via ESP-NOW
-            // esp_now_send(broadcastAddress, (uint8_t *) &myData, sizeof(myData));
+            esp_now_send(broadcastAddress, (uint8_t *) &myData, sizeof(myData));
             //if NULL then send to all address added by esp_now_add_peer 
-            esp_now_send(NULL, (uint8_t *) &myData, sizeof(myData));
+            // esp_now_send(NULL, (uint8_t *) &myData, sizeof(myData));
 
             lastTime = millis();
         }
         }
     #else
+        uint8_t broadcastAddress[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
         //callback function that will be executed when data is received
         void OnDataRecv(uint8_t * mac, uint8_t *incomingData, uint8_t len) {
             // In dia chi mac nhan duoc 
@@ -132,7 +138,9 @@ test_struct myData;
         Serial.begin(115200);
         
         //Set device as a Wi-Fi Station
-        WiFi.mode(WIFI_STA);
+        // WiFi.mode(WIFI_STA);
+        WiFi.softAP("sender", "sendersender", WIFI_CHANNEL, false);
+        WiFi.mode(WIFI_AP_STA);
 
         //Init ESP-NOW
         if (esp_now_init() != 0) {
@@ -143,6 +151,8 @@ test_struct myData;
             // Once ESPNow is successfully Init, we will register for recv CB to
             // get recv packer info
             esp_now_set_self_role(ESP_NOW_ROLE_SLAVE);
+            // esp_now_set_self_role(ESP_NOW_ROLE_COMBO);
+            esp_now_add_peer(broadcastAddress, ESP_NOW_ROLE_CONTROLLER, WIFI_CHANNEL, NULL, 0);
             esp_now_register_recv_cb(OnDataRecv);
         }
         
@@ -158,8 +168,8 @@ test_struct myData;
         //bbroadcast
         uint8_t broadcastAddress1[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
         //unicast
-        uint8_t broadcastAddress2[] = {0xAF, 0xFA, 0xAF, 0xFA, 0xFF, 0xFB};
-        uint8_t broadcastAddress3[] = {0xAB, 0xBA, 0xA1, 0x2A, 0xF1, 0x2B};
+        // uint8_t broadcastAddress2[] = {0xAF, 0xFA, 0xAF, 0xFA, 0xFF, 0xFB};
+        uint8_t broadcastAddress3[] = {0xDC, 0x4F, 0x22, 0x10, 0xD0, 0xD0};
 
         
 
@@ -197,12 +207,12 @@ test_struct myData;
                 Serial.println("Failed to add peer");
                 return;
             }
-            // register second peer  
-            memcpy(peerInfo.peer_addr, broadcastAddress2, 6);
-            if (esp_now_add_peer(&peerInfo) != ESP_OK){
-                Serial.println("Failed to add peer");
-                return;
-            }
+            // // register second peer  
+            // memcpy(peerInfo.peer_addr, broadcastAddress2, 6);
+            // if (esp_now_add_peer(&peerInfo) != ESP_OK){
+            //     Serial.println("Failed to add peer");
+            //     return;
+            // }
             /// register third peer
             memcpy(peerInfo.peer_addr, broadcastAddress3, 6);
             if (esp_now_add_peer(&peerInfo) != ESP_OK){
@@ -215,7 +225,9 @@ test_struct myData;
             myData.x = random(0,20);
             myData.y = random(0,20);
             
-            esp_err_t result = esp_now_send(0, (uint8_t *) &myData, sizeof(test_struct));
+            // esp_err_t result = esp_now_send(NULL, (uint8_t *) &myData, sizeof(test_struct));
+            // esp_err_t result = esp_now_send(0, (uint8_t *) &myData, sizeof(test_struct));
+            esp_err_t result = esp_now_send(broadcastAddress1, (uint8_t *) &myData, sizeof(test_struct));
             
             if (result == ESP_OK) {
                 Serial.println("Sent with success");
