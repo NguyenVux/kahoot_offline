@@ -61,7 +61,8 @@ void OnDataRecv(uint8_t * mac, uint8_t *incomingData, uint8_t len) {
     // after timerDelay esp_now_send will trigger 
     //check if that is info from host 
     if(myData.x==0 && myData.y == 0)
-        lastTime = millis();
+        // lastTime = millis();
+         sendit = false;
     digitalWrite(LED, LOW);
 }
 
@@ -84,8 +85,10 @@ void setup() {
   esp_now_add_peer(broadcastAddress, ESP_NOW_ROLE_COMBO, CHANNEL, NULL, 0);
 }
 
+bool sendit = false;
+
 void loop() {
-  if ((millis() - lastTime) == timerDelay) {
+  // if ((millis() - lastTime) == timerDelay) {
     // Set values to send
     myData.x = random(1,20);
     myData.y = random(1,20);
@@ -94,8 +97,12 @@ void loop() {
     // esp_now_send(broadcastAddress, (uint8_t *) &myData, sizeof(myData));
     //if NULL then send to all address added by esp_now_add_peer 
     // but what if all node aslo get ms?
-    esp_now_send(NULL, (uint8_t *) &myData, sizeof(myData));
+    if(!sendit)
+    {
+        sendit = true;
+        esp_now_send(NULL, (uint8_t *) &myData, sizeof(myData));
+    }
 
     // lastTime = millis();
-  }
+  // }
 }
