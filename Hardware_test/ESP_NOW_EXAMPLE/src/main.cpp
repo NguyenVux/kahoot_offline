@@ -69,7 +69,11 @@ test_struct myData;
         void setup() {
         // Init Serial Monitor
         Serial.begin(115200);
-        
+        WiFi.disconnect();
+	    ESP.eraseConfig();
+        delay(3000);
+
+	    Serial.println(ESP.getSdkVersion());
         // Set device as a Wi-Fi Station
         WiFi.softAP("sender", "sendersender", WIFI_CHANNEL, false);
 	    WiFi.mode(WIFI_AP_STA);
@@ -97,20 +101,21 @@ test_struct myData;
         // Register peer
         // esp_now_add_peer(broadcastAddress, ESP_NOW_ROLE_SLAVE, 6, NULL, 0);
         }
-        
+        int i = 0;
         void loop() {
-        if ((millis() - lastTime) > timerDelay) {
-            // Set values to send
-            myData.x = random(0,20);
-            myData.y = random(0,20);
+            if ((millis() - lastTime) > timerDelay) {
+                // Set values to send
+                myData.x = i;//random(0,20);
+                myData.y = i;//random(0,20);
+                i++;
+                // Send message via ESP-NOW
+                Serial.println(i);
+                esp_now_send(broadcastAddress, (uint8_t *) &myData, sizeof(myData));
+                //if NULL then send to all address added by esp_now_add_peer 
+                // esp_now_send(NULL, (uint8_t *) &myData, sizeof(myData));
 
-            // Send message via ESP-NOW
-            esp_now_send(broadcastAddress, (uint8_t *) &myData, sizeof(myData));
-            //if NULL then send to all address added by esp_now_add_peer 
-            // esp_now_send(NULL, (uint8_t *) &myData, sizeof(myData));
-
-            lastTime = millis();
-        }
+                lastTime = millis();
+            }
         }
     #else
         uint8_t broadcastAddress[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
@@ -136,11 +141,14 @@ test_struct myData;
         void setup() {
         //Initialize Serial Monitor
         Serial.begin(115200);
-        
+        WiFi.disconnect();
+	    ESP.eraseConfig();
+        delay(3000);
         //Set device as a Wi-Fi Station
-        // WiFi.mode(WIFI_STA);
-        WiFi.softAP("sender", "sendersender", WIFI_CHANNEL, false);
-        WiFi.mode(WIFI_AP_STA);
+        
+        WiFi.begin("sender", "sendersender", WIFI_CHANNEL);
+        WiFi.mode(WIFI_STA);
+        // WiFi.mode(WIFI_AP_STA);
 
         //Init ESP-NOW
         if (esp_now_init() != 0) {
@@ -152,7 +160,7 @@ test_struct myData;
             // get recv packer info
             esp_now_set_self_role(ESP_NOW_ROLE_SLAVE);
             // esp_now_set_self_role(ESP_NOW_ROLE_COMBO);
-            esp_now_add_peer(broadcastAddress, ESP_NOW_ROLE_CONTROLLER, WIFI_CHANNEL, NULL, 0);
+            // esp_now_add_peer(broadcastAddress, ESP_NOW_ROLE_CONTROLLER, WIFI_CHANNEL, NULL, 0);
             esp_now_register_recv_cb(OnDataRecv);
         }
         
@@ -187,7 +195,8 @@ test_struct myData;
         
         void setup() {
             Serial.begin(115200);
-            
+
+            WiFi.softAP("sender", "sendersender", WIFI_CHANNEL, false);
             WiFi.mode(WIFI_STA);
             
             if (esp_now_init() != ESP_OK) {
@@ -199,7 +208,7 @@ test_struct myData;
             
             // register peer
             esp_now_peer_info_t peerInfo;
-            peerInfo.channel = 0;  
+            peerInfo.channel = WIFI_CHANNEL;  
             peerInfo.encrypt = false;
             // register first peer  
             memcpy(peerInfo.peer_addr, broadcastAddress1, 6);
@@ -214,28 +223,34 @@ test_struct myData;
             //     return;
             // }
             /// register third peer
-            memcpy(peerInfo.peer_addr, broadcastAddress3, 6);
-            if (esp_now_add_peer(&peerInfo) != ESP_OK){
-                Serial.println("Failed to add peer");
-                return;
-            }
+            // memcpy(peerInfo.peer_addr, broadcastAddress3, 6);
+            // if (esp_now_add_peer(&peerInfo) != ESP_OK){
+            //     Serial.println("Failed to add peer");
+            //     return;
+            // }
         }
+        int i = 0;
+        unsigned long lastTime;
         
         void loop() {
-            myData.x = random(0,20);
-            myData.y = random(0,20);
-            
-            // esp_err_t result = esp_now_send(NULL, (uint8_t *) &myData, sizeof(test_struct));
-            // esp_err_t result = esp_now_send(0, (uint8_t *) &myData, sizeof(test_struct));
-            esp_err_t result = esp_now_send(broadcastAddress1, (uint8_t *) &myData, sizeof(test_struct));
-            
-            if (result == ESP_OK) {
-                Serial.println("Sent with success");
+            if ((millis() - lastTime) > 2000) {
+                myData.x = i;//random(0,20);
+                myData.y = i;//random(0,20);
+                i++;
+                // esp_err_t result = esp_now_send(NULL, (uint8_t *) &myData, sizeof(test_struct));
+                // esp_err_t result = esp_now_send(0, (uint8_t *) &myData, sizeof(test_struct));
+                esp_err_t result = esp_now_send(broadcastAddress1, (uint8_t *) &myData, sizeof(test_struct));
+                
+                if (result == ESP_OK) {
+                    Serial.println(i);
+                    Serial.println("Sent with success");
+                }
+                else {
+                    Serial.println("Error sending the data");
+                }
+                lastTime = millis();
+            //delay(2000);
             }
-            else {
-                Serial.println("Error sending the data");
-            }
-            delay(2000);
         }
     #else
         //Create a struct_message called myData
