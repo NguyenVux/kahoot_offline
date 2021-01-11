@@ -9,7 +9,7 @@ Code này dùng đẻ gửi hoặc nhận giữa 2 board esp
 //uncomment dòng này để lấy địa chỉ mac của host board
 // #define GET_MAC_ADD
 //comment dòng này để nạp cho mạch gửi (HOST)
-// #define SENDER 
+#define SENDER 
 
 //2 cái thư viện của esp8266 và esp32 khác nhau cách sài nhé .... ghét thiệt
 
@@ -53,7 +53,7 @@ test_struct myData;
         
 
         unsigned long lastTime = 0;  
-        unsigned long timerDelay = 2000;  // send readings timer
+        unsigned long timerDelay = 10;  // send readings timer
 
         // Callback when data is sent
         void OnDataSent(uint8_t *mac_addr, uint8_t sendStatus) {
@@ -195,9 +195,10 @@ test_struct myData;
         
         void setup() {
             Serial.begin(115200);
-
+    
             WiFi.softAP("sender", "sendersender", WIFI_CHANNEL, false);
-            WiFi.mode(WIFI_STA);
+            // WiFi.mode(WIFI_STA);
+            WiFi.mode(WIFI_AP_STA);
             
             if (esp_now_init() != ESP_OK) {
                 Serial.println("Error initializing ESP-NOW");
@@ -233,7 +234,7 @@ test_struct myData;
         unsigned long lastTime;
         
         void loop() {
-            if ((millis() - lastTime) > 2000) {
+            if ((millis() - lastTime) > 100) {
                 myData.x = i;//random(0,20);
                 myData.y = i;//random(0,20);
                 i++;
