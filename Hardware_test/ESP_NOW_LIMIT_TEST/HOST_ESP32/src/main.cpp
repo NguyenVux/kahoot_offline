@@ -93,8 +93,8 @@ void setup() {
     myData.x = 0; //random(1,20);
     myData.y = 0; //random(1,20);
     
-    // esp_err_t result = esp_now_send(0, (uint8_t *) &myData, sizeof(test_struct));
-    esp_err_t result = esp_now_send(NULL, (uint8_t *) &myData, sizeof(test_struct));
+    esp_err_t result = esp_now_send(0, (uint8_t *) &myData, sizeof(test_struct));
+    // esp_err_t result = esp_now_send(NULL, (uint8_t *) &myData, sizeof(test_struct));
     
     if (result == ESP_OK) {
         Serial.println("Sent with success");
