@@ -85,7 +85,7 @@ void setup() {
 }
 
 void loop() {
-  if ((millis() - lastTime) > timerDelay) {
+  if ((millis() - lastTime) == timerDelay) {
     // Set values to send
     myData.x = random(1,20);
     myData.y = random(1,20);
