@@ -77,7 +77,7 @@ test_struct myData;
         // Set device as a Wi-Fi Station
         WiFi.softAP("sender", "sendersender", WIFI_CHANNEL, false);
 	    WiFi.mode(WIFI_AP_STA);
-
+        WiFi.disconnect();
         // WiFi.mode(WIFI_STA);
 
         // Init ESP-NOW
@@ -141,12 +141,15 @@ test_struct myData;
         void setup() {
         //Initialize Serial Monitor
         Serial.begin(115200);
+        WiFi.mode(WIFI_STA);
         WiFi.disconnect();
 	    ESP.eraseConfig();
         delay(3000);
         //Set device as a Wi-Fi Station
-        WiFi.mode(WIFI_STA);
+        
         WiFi.begin("sender", "sendersender", WIFI_CHANNEL);
+        WiFi.mode(WIFI_STA);
+        WiFi.disconnect();
         // WiFi.softAP("sender", "sendersender", WIFI_CHANNEL, false);
         // WiFi.mode(WIFI_AP_STA);
 
@@ -178,7 +181,7 @@ test_struct myData;
         uint8_t broadcastAddress1[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
         //unicast
         // uint8_t broadcastAddress2[] = {0xAF, 0xFA, 0xAF, 0xFA, 0xFF, 0xFB};
-        uint8_t broadcastAddress3[] = {0xDC, 0x4F, 0x22, 0x10, 0xD0, 0xD0};
+        // uint8_t broadcastAddress3[] = {0xDC, 0x4F, 0x22, 0x10, 0xD0, 0xD0};
 
         
 
@@ -200,6 +203,7 @@ test_struct myData;
             WiFi.softAP("sender", "sendersender", WIFI_CHANNEL, false);
             // WiFi.mode(WIFI_STA);
             WiFi.mode(WIFI_AP_STA);
+            WiFi.disconnect();
             
             if (esp_now_init() != ESP_OK) {
                 Serial.println("Error initializing ESP-NOW");
@@ -283,6 +287,7 @@ test_struct myData;
             
             //Set device as a Wi-Fi Station
             WiFi.mode(WIFI_STA);
+            WiFi.disconnect();
 
             //Init ESP-NOW
             if (esp_now_init() != ESP_OK) {
