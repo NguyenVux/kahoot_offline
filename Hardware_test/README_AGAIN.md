@@ -19,3 +19,6 @@ https://www.youtube.com/watch?v=GG8JtFNiHw0 thấy cũng được đó :v nhưng
 - KahootV1.0: Phiên bản đâu tiên </br>
   Note: node hiện chỉ cần dev để ngủ trong chế độ Light-sleep </br>
    khi tắt (bấm nút kiểu gì đó) thì chuyển sang Deep-sleep nhưng sẽ cần mạch ngoài để có thể trở lại workmode !!!
+# Thiết lập kết nối và ID giữa ESP-32 và ESP-8266:
+- Sử dụng broadcast để spam MAC address ESP-32 trong 1s.
+- ESP-8266 nhận được broadcast kèm theo thời gian spam của ESP-32. 
