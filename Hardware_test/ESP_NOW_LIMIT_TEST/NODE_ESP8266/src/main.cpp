@@ -5,22 +5,10 @@
 uint8_t host_MAC[6] = {0x00,0x00,0x00,0x00,0x00,0x00};
 
 void OnRecv(uint8_t *mac,uint8_t *incomingData, uint8_t len) {
-    Serial.println("LENGTH: ");
-    Serial.println(strlen((char *)host_MAC));
-    if(strlen((char *)host_MAC) == 0)
+    if(!(strlen((char *)host_MAC)))
     {
-        Serial.print("MAC: ");
-        Serial.print(mac[0],DEC);
-        Serial.print(":");
-        for(uint8_t i = 1; i < 6;++i)
-        {
-            Serial.print(mac[i],DEC);
-            Serial.print(":");
-        }
         memcpy(host_MAC,mac,6);
     }
-    Serial.
-    println("Data incoming");
 }
 void setup()
 {
