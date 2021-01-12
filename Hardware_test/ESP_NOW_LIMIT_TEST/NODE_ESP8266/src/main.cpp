@@ -21,12 +21,7 @@ Code này dùng để test số lượng node mà esp8266/esp32 có thể nhận
 unsigned long lastTime = 0;  
 unsigned long timerDelay = 2000;  //send readings timer
 
-typedef struct test_struct {
-  int x;
-  int y;
-} test_struct;
-
-test_struct myData;
+uint8_t myData;
 //cái này bỏ có được ko 
 uint8_t broadcastAddress[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 
@@ -50,27 +45,24 @@ void OnDataRecv(uint8_t * mac, uint8_t *incomingData, uint8_t len) {
     //digitalWrite(LED, HIGH);
     // In dia chi mac nhan duoc 
     char macStr[18];
-    Serial.print("MacFrom");
+    Serial.print("MacFrom: ");
     snprintf(macStr, sizeof(macStr), "%02x:%02x:%02x:%02x:%02x:%02x",
             mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-    Serial.print(macStr);
-    
+    Serial.println(macStr);
+
+    // Serial.print("HOST MAC: ");
+    // snprintf(macStr, sizeof(incomingData), "%02x:%02x:%02x:%02x:%02x:%02x",
+    //          incomingData[0], incomingData[1], incomingData[2], incomingData[3], incomingData[4], incomingData[5]);
+    // Serial.println(macStr);
+
     memcpy(&myData, incomingData, sizeof(myData));
-    Serial.print("\nBytes received: ");
+    Serial.print("Bytes received: ");
     Serial.println(len);
-    Serial.print("x: ");
-    Serial.println(myData.x);
-    Serial.print("y: ");
-    Serial.println(myData.y);
+    Serial.print("Data: ");
+    Serial.println(myData);
     Serial.println();
-    // // after timerDelay esp_now_send will trigger 
-    // // check if that is info from host 
-    // if(myData.x==0 && myData.y == 0)
-    //     // lastTime = millis();
-    //      sendit = false;
     digitalWrite(LED, LOW);
     led_blink_ms = millis();
-    delay(500);
 }
 
 void setup() {
@@ -99,8 +91,8 @@ void setup() {
 
 int i = 0;
 void loop() {
-  if(led_blink_ms > LED_BLINK_DELAY)
-    LED_OFF;
+  // if(led_blink_ms > LED_BLINK_DELAY)
+  //   LED_OFF;
   // if ((millis() - lastTime) > timerDelay)
   // {
   //   // Set values to send
