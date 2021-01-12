@@ -9,7 +9,7 @@ Code này dùng đẻ gửi hoặc nhận giữa 2 board esp
 //uncomment dòng này để lấy địa chỉ mac của host board
 // #define GET_MAC_ADD
 //comment dòng này để nạp cho mạch gửi (HOST)
-//#define SENDER 
+#define SENDER 
 
 //2 cái thư viện của esp8266 và esp32 khác nhau cách sài nhé .... ghét thiệt
 
@@ -77,7 +77,8 @@ test_struct myData;
         // Set device as a Wi-Fi Station
         WiFi.softAP("sender", "sendersender", WIFI_CHANNEL, false);
 	    WiFi.mode(WIFI_AP_STA);
-        WiFi.disconnect();
+        
+
         // WiFi.mode(WIFI_STA);
 
         // Init ESP-NOW
@@ -136,20 +137,18 @@ test_struct myData;
             Serial.print("y: ");
             Serial.println(myData.y);
             Serial.println();
+            
         }
         
         void setup() {
         //Initialize Serial Monitor
         Serial.begin(115200);
-        WiFi.mode(WIFI_STA);
         WiFi.disconnect();
 	    ESP.eraseConfig();
         delay(3000);
         //Set device as a Wi-Fi Station
-        
         WiFi.begin("sender", "sendersender", WIFI_CHANNEL);
         WiFi.mode(WIFI_STA);
-        WiFi.disconnect();
         // WiFi.softAP("sender", "sendersender", WIFI_CHANNEL, false);
         // WiFi.mode(WIFI_AP_STA);
 
@@ -181,7 +180,7 @@ test_struct myData;
         uint8_t broadcastAddress1[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
         //unicast
         // uint8_t broadcastAddress2[] = {0xAF, 0xFA, 0xAF, 0xFA, 0xFF, 0xFB};
-        // uint8_t broadcastAddress3[] = {0xDC, 0x4F, 0x22, 0x10, 0xD0, 0xD0};
+        uint8_t broadcastAddress3[] = {0xDC, 0x4F, 0x22, 0x10, 0xD0, 0xD0};
 
         
 
@@ -199,18 +198,17 @@ test_struct myData;
         
         void setup() {
             Serial.begin(115200);
-    
             WiFi.softAP("sender", "sendersender", WIFI_CHANNEL, false);
             // WiFi.mode(WIFI_STA);
             WiFi.mode(WIFI_AP_STA);
-            WiFi.disconnect();
-            
+        
             if (esp_now_init() != ESP_OK) {
                 Serial.println("Error initializing ESP-NOW");
                 return;
             }
             
             esp_now_register_send_cb(OnDataSent);
+            
             
             // register peer
             esp_now_peer_info_t peerInfo;
@@ -287,7 +285,6 @@ test_struct myData;
             
             //Set device as a Wi-Fi Station
             WiFi.mode(WIFI_STA);
-            WiFi.disconnect();
 
             //Init ESP-NOW
             if (esp_now_init() != ESP_OK) {
