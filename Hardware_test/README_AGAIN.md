@@ -22,3 +22,4 @@ https://www.youtube.com/watch?v=GG8JtFNiHw0 thấy cũng được đó :v nhưng
 # Thiết lập kết nối và ID giữa ESP-32 và ESP-8266:
 - Sử dụng broadcast để spam MAC address ESP-32 trong 1s.
 - ESP-8266 nhận được broadcast kèm theo thời gian spam của ESP-32. 
+- Lưu danh sách slave MAC addr vào flash của ESP-32
