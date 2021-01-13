@@ -1,19 +1,31 @@
 #include "WiFi.h"
 #include "esp_now.h"
-
+#include <Arduino.h>
 #define WIFI_CHANNEL 0
 uint8_t broadcast_MAC[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 
+void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status)
+{
+    Serial.print("\r\nLast Packet Send Status:\t");
+    Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
+}
 
-void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
-  Serial.print("\r\nLast Packet Send Status:\t");
-  Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
+void OnDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len)
+{
+    Serial.print("on data");
 }
 
 void setup()
 {
     Serial.begin(115200);
-    WiFi.mode(WIFI_MODE_STA);
+    WiFi.softAP("sender", "sendersender", WIFI_CHANNEL, false);
+    // WiFi.mode(WIFI_STA);
+    WiFi.mode(WIFI_AP_STA);
+    WiFi.disconnect();
+    //WiFi.mode(WIFI_MODE_STA);
+    Serial.println();
+    Serial.print("ESP8266 Board MAC Address:  ");
+    Serial.println(WiFi.macAddress());
     if (esp_now_init() != ESP_OK)
     {
         Serial.println("Error initializing ESP-NOW");
@@ -30,23 +42,14 @@ void setup()
         return;
     }
     esp_now_register_send_cb(OnDataSent);
+    esp_now_register_recv_cb(OnDataRecv);
 }
 
 void loop()
 {
 
     uint8_t data = 255;
-    
 
-    esp_err_t result = esp_now_send(broadcast_MAC, &data, sizeof(data));
-
-    if (result == ESP_OK)
-    {
-        Serial.println("Sent with success");
-    }
-    else
-    {
-        Serial.println("Error sending the data");
-    }
+    esp_now_send(broadcast_MAC, &data, sizeof(data));
     delay(2000);
 }
