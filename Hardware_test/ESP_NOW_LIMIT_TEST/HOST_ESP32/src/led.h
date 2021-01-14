@@ -1,12 +1,14 @@
+#ifndef _LED_
+#define _LED_
 #include <Arduino.h>
-
+#include "stopwatch.h"
 class Led
 {
 public:
     enum mode
     {
-        OFF,
-        ON,
+        OFF = 0,
+        ON = 1,
         BLINK,
     };
     Led(uint8_t pin);
@@ -14,32 +16,27 @@ public:
     
     void on();
     void off();
+    void toggle();
     void blink(unsigned long interval);
-    /*
-    @brief Should not call in loop(). After quickBlink, LED returns to previous mode
-    @param time     how many times led blink
-    @param interval on time and off time
-    */
-    void quickBlink(uint8_t time, unsigned long interval);
-
+    void blink(unsigned long interval, uint8_t blinkNum);
+    //Call this in loop()
     void update();
 
     mode getMode() const;
     uint8_t getPin() const;
-    unsigned long getInterval() const;
 
 private:
     uint8_t pin;
     mode ledMode = mode::OFF;
-    // Three variables below are used for blink, quick_blink
-    bool state = false;
+
+    Stopwatch<> timer;
     unsigned long interval = 0;
-    unsigned long prevMillis = 0;
-    // Three variables below are used for quick_blink
-    unsigned long prevInterval = 0;
+    void (Led::*modeFunc)() = &Led::blinkUpdate;
+
     uint8_t quickBlinkCounter = 0;
     uint8_t quickBlinkTime = 0;
-    void (Led::*modeFunc)() = NULL;
+
     void blinkUpdate();
     void quickBlinkUpdate();
 };
+#endif

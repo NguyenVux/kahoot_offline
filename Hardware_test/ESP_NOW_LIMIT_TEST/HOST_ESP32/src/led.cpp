@@ -5,14 +5,37 @@ Led::Led(uint8_t pin)
     pinMode(pin, OUTPUT);
 };
 
-Led::mode Led::getMode() const
-{
-    return ledMode;
-}
-
 void Led::setPin(uint8_t ledPin)
 {
     pin = ledPin;
+}
+
+// unsigned long Led::getInterval() const
+// {
+//     return interval;
+// }
+
+void Led::on()
+{
+    ledMode = ON;
+    digitalWrite(pin, HIGH);
+}
+
+void Led::off()
+{
+    ledMode = OFF;
+    digitalWrite(pin, LOW);
+}
+
+void Led::toggle()
+{
+    ledMode = (Led::mode)!digitalRead(pin);
+    digitalWrite(pin, ledMode);
+}
+
+Led::mode Led::getMode() const
+{
+    return ledMode;
 }
 
 uint8_t Led::getPin() const
@@ -20,87 +43,44 @@ uint8_t Led::getPin() const
     return pin;
 }
 
-unsigned long Led::getInterval() const
-{
-    return interval;
-}
-
-void Led::on()
-{
-    this->ledMode = ledMode;
-    digitalWrite(pin, HIGH);
-    modeFunc = NULL;
-}
-
-void Led::off()
-{
-    this->ledMode = ledMode;
-    digitalWrite(pin, LOW);
-    modeFunc = NULL;
-}
-
 void Led::blink(unsigned long mili)
 {
-    this->ledMode = ledMode;
+    ledMode = BLINK;
     interval = mili;
     modeFunc = &Led::blinkUpdate;
 }
 
-void Led::quickBlink(uint8_t time, unsigned long mili)
+void Led::blink(unsigned long mili, uint8_t blinkNum)
 {
     quickBlinkCounter = 0;
     //Off time also counted
-    quickBlinkTime = time * 2;
+    quickBlinkTime = blinkNum * 2;
     interval = mili;
-    prevInterval = interval;
     modeFunc = &Led::quickBlinkUpdate;
 }
 
+//Call this in loop()
 void Led::update()
 {
-    if (modeFunc != NULL)
+    if (ledMode == BLINK)
         (this->*modeFunc)();
 }
 
 void Led::blinkUpdate()
 {
-    unsigned long curMillis = millis();
-    if (curMillis - prevMillis >= interval)
+    if (timer.elapsed() >= interval)
     {
-        prevMillis = curMillis;
-        state = !state;
-        digitalWrite(pin, state);
+        timer.start();
+        digitalWrite(pin, !digitalRead(pin));
     }
 }
 
 void Led::quickBlinkUpdate()
 {
-    if (quickBlinkCounter < quickBlinkTime)
+    if (quickBlinkCounter < quickBlinkTime && timer.elapsed() >= interval)
     {
-        unsigned long curMillis = millis();
-        if (curMillis - prevMillis >= interval)
-        {
-            ++quickBlinkCounter;
-            prevMillis = curMillis;
-            state = !state;
-            digitalWrite(pin, state);
-        }
-    }
-    else //restore previous mode
-    {
-        switch (ledMode)
-        {
-        case OFF:
-            off();
-            break;
-        case ON:
-            on();
-            break;
-        case BLINK:
-            blink(interval);
-            break;
-        default:
-            break;
-        }
+        timer.start();
+        digitalWrite(pin, !digitalRead(pin));
+        ++quickBlinkCounter;
     }
 }
