@@ -1,8 +1,6 @@
 #include "client.h"
-
-clientInfo_t clientInfo[CLIENT_LIMIT];
 size_t size = 0;
-
+clientInfo_t clientInfo[CLIENT_LIMIT];
 void addClient(const uint8_t *macAddr, uint8_t id)
 {
     if (size < CLIENT_LIMIT)
@@ -16,4 +14,9 @@ void addClient(const uint8_t *macAddr, uint8_t id)
 size_t clientSize()
 {
     return size;
+}
+
+clientInfo_t *ClientInfo()
+{
+    return clientInfo;
 }

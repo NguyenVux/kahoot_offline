@@ -9,18 +9,18 @@ Code này dùng để test số lượng node mà esp8266/esp32 có thể nhận
 2. Chờ và nhận tín hiệu
 */
 
-#include <Arduino.h>
-#include <WiFi.h>
-#include <esp_now.h>
-#include "led.h"
-#include "stopwatch.h"
+// #include <Arduino.h>
+// #include <WiFi.h>
+// #include <esp_now.h>
+// #include "led.h"
+// #include "stopwatch.h"
 #include "broadcast.h"
 #include "client.h"
 
 #define LED 2
 #define CHANNEL 0
 
-Led led(LED);
+// Led led(LED);
 // Broadcast MAC address
 uint8_t macAddr[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 
@@ -96,8 +96,19 @@ void setup()
 
 }
 
+int lastsize = 0;
 void loop()
 {
-    Serial.println("Found: ");
-    Serial.println(clientSize());
+    if(!clientSize()){
+        Serial.print("Found: no");
+        Serial.print(clientSize());
+        Serial.print("MAC ");
+        for (int i = 0; i < 6; ++i)
+        {
+            Serial.print(":");
+            Serial.print(ClientInfo()[clientSize()-1].macAddr[i], HEX);
+        }
+        Serial.println();
+        lastsize = clientSize();
+    }
 }

@@ -63,7 +63,9 @@ void loop()
         if(ctime - last_time >= delay_duration)
         {
             esp_now_send(host_MAC,(uint8_t *)&ctime, sizeof(ctime));
-            last_time = millis();
+            last_time = millis();   
+            // GỬI 1 LẦN 
+            delay_duration = 0;
         }
     }
 }
