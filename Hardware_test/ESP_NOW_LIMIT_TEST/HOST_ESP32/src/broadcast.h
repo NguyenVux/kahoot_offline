@@ -9,10 +9,14 @@
 
 #define DEFAULT_BROADCAST_TIMEOUT 100
 
+/*
+@brief Broadcast until time out or num is reached
+@param num  How many retry to send data, 0 for unlimited retry
+*/
 esp_err_t startBroadcast(const uint8_t *peer_addr,
                          const uint8_t *data,
                          size_t len,
-                         size_t timeout = DEFAULT_BROADCAST_TIMEOUT,
-                         size_t num = 1);
+                         size_t num = 0,
+                         size_t timeout = DEFAULT_BROADCAST_TIMEOUT);
 
 #endif
