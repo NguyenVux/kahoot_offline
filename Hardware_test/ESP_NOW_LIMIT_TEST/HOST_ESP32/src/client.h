@@ -8,6 +8,8 @@ struct clientInfo_t
 };
 #define CLIENT_LIMIT 100
 
+
 void addClient(const uint8_t *macAddr, uint8_t id);
 size_t clientSize();
+clientInfo_t *ClientInfo();
 #endif
