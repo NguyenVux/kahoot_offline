@@ -1,6 +1,6 @@
 #include "broadcast.h"
 
-Led led(2);
+Led broadcastLED(2);
 
 esp_err_t startBroadcast(const uint8_t *peer_addr,
                          const uint8_t *data,
@@ -8,19 +8,23 @@ esp_err_t startBroadcast(const uint8_t *peer_addr,
                          size_t timeout,
                          size_t num)
 {
-    size_t counter = 1;
+    size_t counter = 0;
     Stopwatch<> timer;
     esp_err_t err = ESP_OK;
-    led.blink(100);
+    bool (*checkCounter)(size_t counter, size_t num);
+    checkCounter = (num == 0)
+                       ? [](size_t, size_t) { return true; }
+                       : [](size_t counter, size_t num) { return counter < num; };
+    broadcastLED.blink(100);
     timer.start();
 
-    while (timer.elapsed() <= timeout && counter != num + 1)
+    while (timer.elapsed() <= timeout && checkCounter(counter, num))
     {
         err = esp_now_send(peer_addr, data, len);
         ++counter;
-        led.update();
+        broadcastLED.update();
         timer.start();
     }
-    led.off();
+    broadcastLED.off();
     return err;
 }
