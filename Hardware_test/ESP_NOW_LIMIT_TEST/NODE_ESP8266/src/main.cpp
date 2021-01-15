@@ -5,52 +5,51 @@
 uint8_t host_MAC[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 uint32_t delay_duration = 0;
 
-void resetSettings() {
-  //WiFi_enableSTA(true,true); // must be sta to disconnect erase
-  WiFi.mode(WIFI_STA);
-  #ifdef ESP32
-    WiFi.disconnect(true,true);
-  #else
+void resetSettings()
+{
+    WiFi.mode(WIFI_STA);
+#ifdef ESP32
+    WiFi.disconnect(true, true);
+#else
     WiFi.persistent(true);
     WiFi.disconnect(true);
     WiFi.persistent(false);
     //xoá các config cũ trong ESP !!!
-    //WiFi.disconnect();//will erase ssid/password
     ESP.eraseConfig();
     delay(3000);
-  #endif
+#endif
 }
 
 void OnRecv(uint8_t *mac, uint8_t *incomingData, uint8_t len)
 {
     // if (!(strlen((char *)host_MAC)))
     // {
-        memcpy(host_MAC, mac, 6);
-        Serial.print("MAC ");
-        for (int i = 0; i < 6; ++i)
-        {
-            Serial.print(": ");
-            Serial.print(host_MAC[i], HEX);
-        }
-        // Serial.print("\nresult: ");
-        // Serial.println(esp_now_add_peer(host_MAC, ESP_NOW_ROLE_SLAVE, 0, NULL, 0), DEC);
-        // Serial.print("send result: ");
-        // Serial.println(esp_now_send(host_MAC, incomingData, len), DEC);
+    memcpy(host_MAC, mac, 6);
+    Serial.print("MAC ");
+    for (int i = 0; i < 6; ++i)
+    {
+        Serial.print(": ");
+        Serial.print(host_MAC[i], HEX);
+    }
+    // Serial.print("\nresult: ");
+    // Serial.println(esp_now_add_peer(host_MAC, ESP_NOW_ROLE_SLAVE, 0, NULL, 0), DEC);
+    // Serial.print("send result: ");
+    // Serial.println(esp_now_send(host_MAC, incomingData, len), DEC);
 
-        memcpy(&delay_duration,incomingData,len);
-        if (delay_duration)
-        {
-            Serial.print("Delay Duration:  ");
-            Serial.println(delay_duration);
-            Serial.println("ON Data");
-        }
+    memcpy(&delay_duration, incomingData, len);
+    if (delay_duration)
+    {
+        Serial.print("Delay Duration:  ");
+        Serial.println(delay_duration);
+        Serial.println("ON Data");
+    }
     // }
 }
 
 void onSent(uint8_t *mac_addr, uint8_t sendStatus)
 {
     Serial.print("Status:");
-    Serial.println(sendStatus?"FAILED":"SUCEED");
+    Serial.println(sendStatus ? "FAILED" : "SUCEED");
 }
 void setup()
 {
@@ -75,15 +74,15 @@ uint64_t last_time = millis();
 void loop()
 {
     uint64_t ctime = millis();
-    if(delay_duration)
+    if (delay_duration)
     {
-        if(ctime - last_time >= delay_duration)
+        if (ctime - last_time >= delay_duration)
         {
             Serial.print("send result: ");
-            esp_now_send(host_MAC,(uint8_t *)&ctime, sizeof(ctime));
+            esp_now_send(host_MAC, (uint8_t *)&ctime, sizeof(ctime));
             esp_now_register_recv_cb(OnRecv);
-            last_time = millis();   
-            // GỬI 1 LẦN 
+            last_time = millis();
+            // GỬI 1 LẦN
             delay_duration = 0;
         }
     }
