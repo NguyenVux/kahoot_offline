@@ -4,6 +4,23 @@
 
 uint8_t host_MAC[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 uint32_t delay_duration = 0;
+
+void resetSettings() {
+  //WiFi_enableSTA(true,true); // must be sta to disconnect erase
+  WiFi.mode(WIFI_STA);
+  #ifdef ESP32
+    WiFi.disconnect(true,true);
+  #else
+    WiFi.persistent(true);
+    WiFi.disconnect(true);
+    WiFi.persistent(false);
+    //xoá các config cũ trong ESP !!!
+    //WiFi.disconnect();//will erase ssid/password
+    ESP.eraseConfig();
+    delay(3000);
+  #endif
+}
+
 void OnRecv(uint8_t *mac, uint8_t *incomingData, uint8_t len)
 {
     // if (!(strlen((char *)host_MAC)))
@@ -38,7 +55,7 @@ void onSent(uint8_t *mac_addr, uint8_t sendStatus)
 void setup()
 {
     Serial.begin(115200);
-
+    resetSettings();
     WiFi.mode(WIFI_STA);
 
     // WiFi.begin("sender", "sendersender",0);
