@@ -102,11 +102,16 @@ void loop()
         Serial.print("Found: no.");
         Serial.print(lastsize);
         Serial.print(" MAC ");
-        for (int i = 0; i < 6; ++i)
-        {
-            Serial.print(":");
-            Serial.print(ClientInfo()[lastsize].macAddr[i], HEX);
-        }
+        // for (int i = 0; i < 6; ++i)
+        // {
+        //     Serial.print(":");
+        //     Serial.print(ClientInfo()[lastsize].macAddr[i], HEX);
+        // }
+        char str[18];
+        auto *c = ClientInfo()[lastsize].macAddr;
+        snprintf(str, sizeof(str), "%02x:%02x:%02x:%02x:%02x:%02x",
+                 c[0], c[1], c[2], c[3], c[4], c[5]);
+        Serial.print(str);
         Serial.println();
         lastsize++;
     }
