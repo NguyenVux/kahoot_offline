@@ -24,6 +24,14 @@ Code này dùng để test số lượng node mà esp8266/esp32 có thể nhận
 // Broadcast MAC address
 uint8_t macAddr[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 
+void serialPrintMAC(const uint8_t *addr)
+{
+    char str[18];
+    snprintf(str, sizeof(str), MACSTR,
+             MAC2STR(addr));
+    Serial.print(str);
+}
+
 // callback function that will be executed when data is received
 // void OnDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len)
 // {
@@ -33,7 +41,6 @@ uint8_t macAddr[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 //     snprintf(macStr, sizeof(macStr), "%02x:%02x:%02x:%02x:%02x:%02x",
 //              mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 //     Serial.print(macStr);
-
 //     //memcpy(&myData, incomingData, sizeof(myData));
 //     Serial.print("Bytes received: ");
 //     Serial.println(len);
@@ -41,7 +48,6 @@ uint8_t macAddr[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 //     //Serial.println(myData);
 //     Serial.println();
 // }
-
 // callback when data is sent
 // void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status)
 // {
@@ -57,8 +63,9 @@ uint8_t macAddr[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 
 void receiveReply(const uint8_t *mac, const uint8_t *incomingData, int len)
 {
-    //CHUA THONG NHAT CACH TAO ID, NEN DE TRONG
-    addClient(mac, 0);
+    //CHUA THONG NHAT CACH TAO ID, NEN DE TRONG PHAN ID
+    if(!client::search(mac))
+        client::add(mac, 0);
 }
 
 void setup()
@@ -97,21 +104,12 @@ void setup()
 int lastsize = 0;
 void loop()
 {
-    if (lastsize != clientSize())
+    if (lastsize != client::size())
     {
         Serial.print("Found: no.");
         Serial.print(lastsize);
         Serial.print(" MAC ");
-        // for (int i = 0; i < 6; ++i)
-        // {
-        //     Serial.print(":");
-        //     Serial.print(ClientInfo()[lastsize].macAddr[i], HEX);
-        // }
-        char str[18];
-        auto *c = ClientInfo()[lastsize].macAddr;
-        snprintf(str, sizeof(str), "%02x:%02x:%02x:%02x:%02x:%02x",
-                 c[0], c[1], c[2], c[3], c[4], c[5]);
-        Serial.print(str);
+        serialPrintMAC(client::get(lastsize)->macAddr);
         Serial.println();
         lastsize++;
     }

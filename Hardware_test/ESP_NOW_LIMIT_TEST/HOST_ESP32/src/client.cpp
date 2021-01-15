@@ -1,23 +1,41 @@
 #include "client.h"
-size_t size = 0;
+size_t clientSize = 0;
 clientInfo_t clientInfo[CLIENT_LIMIT];
-void addClient(const uint8_t *macAddr, uint8_t id)
+void client::add(const uint8_t *macAddr, uint8_t id)
 {
-    if (size < CLIENT_LIMIT)
+    if (clientSize < CLIENT_LIMIT)
     {
-        memcpy(clientInfo[size].macAddr, macAddr, 6);
-        clientInfo[size].id = id;
-        ++size;
+        memcpy(clientInfo[clientSize].macAddr, macAddr, 6);
+        clientInfo[clientSize].id = id;
+        ++clientSize;
     }
 }
 
-size_t clientSize()
+size_t client::size()
 {
-    return size;
+    return clientSize;
 }
 
-clientInfo_t *ClientInfo()
+clientInfo_t *client::get(size_t idx)
 {
-    return clientInfo;
+    return &clientInfo[idx];
 }
 
+clientInfo_t *search(const uint8_t *macAddr)
+{
+    for (int i = 0; i < clientSize; ++i)
+    {
+        if (cmpArr(clientInfo[i].macAddr, macAddr, 6, 6))
+            return &clientInfo[i];
+    }
+    return NULL;
+}
+clientInfo_t *search(uint8_t id)
+{
+    for (int i = 0; i < clientSize; ++i)
+    {
+        if (clientInfo[i].id == id)
+            return &clientInfo[i];
+    }
+    return NULL;
+}
