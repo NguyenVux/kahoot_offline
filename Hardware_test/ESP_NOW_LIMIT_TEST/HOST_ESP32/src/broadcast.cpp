@@ -18,12 +18,14 @@ esp_err_t startBroadcast(const uint8_t *peer_addr,
     broadcastLED.blink(100);
     timer.start();
     broadcastLED.on();
-    while (timer.elapsed() <= timeout && counter < num)//checkCounter(counter, num)
+    while (timer.elapsed() <= timeout)
     {
-        err = esp_now_send(peer_addr, data, len);
-        ++counter;
+        if (counter < num)
+        {
+            err = esp_now_send(peer_addr, data, len);
+            ++counter;
+        }
         broadcastLED.update();
-        // timer.start();
     }
     broadcastLED.off();
     return err;
