@@ -100,15 +100,15 @@ int lastsize = 0;
 void loop()
 {
     if(lastsize!=clientSize()){
-        Serial.print("Found: no");
-        Serial.print(clientSize());
-        Serial.print("MAC ");
+        Serial.print("Found: no.");
+        Serial.print(lastsize);
+        Serial.print(" MAC ");
         for (int i = 0; i < 6; ++i)
         {
             Serial.print(":");
-            Serial.print(ClientInfo()[clientSize()-1].macAddr[i], HEX);
+            Serial.print(ClientInfo()[lastsize-1].macAddr[i], HEX);
         }
         Serial.println();
-        lastsize = clientSize();
+        lastsize ++;
     }
 }
