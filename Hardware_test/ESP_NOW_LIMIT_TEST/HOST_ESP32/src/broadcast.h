@@ -3,11 +3,11 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include <esp_now.h>
-// #include "client.h"
+#include "client.h"
 #include "stopwatch.h"
 #include "led.h"
 
-#define DEFAULT_BROADCAST_TIMEOUT 100
+#define DEFAULT_BROADCAST_TIMEOUT 2000
 
 /*
 @brief Broadcast until time out or num is reached
@@ -16,7 +16,7 @@
 esp_err_t startBroadcast(const uint8_t *peer_addr,
                          const uint8_t *data,
                          size_t len,
-                         size_t num = 0,
+                         size_t num = 10,
                          size_t timeout = DEFAULT_BROADCAST_TIMEOUT);
 
 #endif

@@ -99,7 +99,7 @@ void setup()
 int lastsize = 0;
 void loop()
 {
-    if(!clientSize()){
+    if(lastsize!=clientSize()){
         Serial.print("Found: no");
         Serial.print(clientSize());
         Serial.print("MAC ");
