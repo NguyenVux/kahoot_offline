@@ -24,7 +24,6 @@ Code này dùng để test số lượng node mà esp8266/esp32 có thể nhận
 // Broadcast MAC address
 uint8_t macAddr[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 
-
 // callback function that will be executed when data is received
 // void OnDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len)
 // {
@@ -90,25 +89,25 @@ void setup()
     Serial.print("Broadcasting MAC address from ");
     Serial.println(WiFi.macAddress());
     auto sendData = DEFAULT_BROADCAST_TIMEOUT;
-    
+
     esp_now_register_recv_cb(receiveReply);
     startBroadcast(macAddr, (uint8_t *)&sendData, sizeof(sendData));
-
 }
 
 int lastsize = 0;
 void loop()
 {
-    if(lastsize!=clientSize()){
+    if (lastsize != clientSize())
+    {
         Serial.print("Found: no.");
         Serial.print(lastsize);
         Serial.print(" MAC ");
         for (int i = 0; i < 6; ++i)
         {
             Serial.print(":");
-            Serial.print(ClientInfo()[lastsize-1].macAddr[i], HEX);
+            Serial.print(ClientInfo()[lastsize].macAddr[i], HEX);
         }
         Serial.println();
-        lastsize ++;
+        lastsize++;
     }
 }
