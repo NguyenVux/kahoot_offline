@@ -27,7 +27,6 @@ void OnRecv(uint8_t *mac, uint8_t *incomingData, uint8_t len)
     // {
         LED_ON_BOARD.toggle();
         memcpy(host_MAC, mac, 6);
-        LED_ON_BOARD.blink(100);
         Serial.print("MAC ");
         for (int i = 0; i < 6; ++i)
         {
@@ -47,6 +46,7 @@ void OnRecv(uint8_t *mac, uint8_t *incomingData, uint8_t len)
             Serial.println("ON Data");
         }
         LED_ON_BOARD.toggle();
+        LED_ON_BOARD.blink(50);
     // }
 }
 
@@ -90,6 +90,7 @@ void loop()
             last_time = millis();
             // GỬI 1 LẦN
             delay_duration = 0;
+            LED_ON_BOARD.blink(100);
         }
     }
     // delay(100);
