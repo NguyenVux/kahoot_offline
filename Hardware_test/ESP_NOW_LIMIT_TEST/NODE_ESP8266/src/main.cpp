@@ -1,7 +1,8 @@
 //#include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <espnow.h>
-
+#include "led.h"
+Led LED_ON_BOARD(2);
 uint8_t host_MAC[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 uint32_t delay_duration = 0;
 
@@ -25,7 +26,9 @@ void OnRecv(uint8_t *mac, uint8_t *incomingData, uint8_t len)
 {
     // if (!(strlen((char *)host_MAC)))
     // {
+        LED_ON_BOARD.toggle();
         memcpy(host_MAC, mac, 6);
+        LED_ON_BOARD.blink(100);
         Serial.print("MAC ");
         for (int i = 0; i < 6; ++i)
         {
@@ -44,6 +47,7 @@ void OnRecv(uint8_t *mac, uint8_t *incomingData, uint8_t len)
             Serial.println(delay_duration);
             Serial.println("ON Data");
         }
+        LED_ON_BOARD.toggle();
     // }
 }
 
@@ -54,6 +58,7 @@ void onSent(uint8_t *mac_addr, uint8_t sendStatus)
 }
 void setup()
 {
+    LED_ON_BOARD.blink(100);
     Serial.begin(115200);
     resetSettings();
     WiFi.mode(WIFI_STA);
@@ -74,6 +79,7 @@ void setup()
 uint64_t last_time = millis();
 void loop()
 {
+    LED_ON_BOARD.update();
     uint64_t ctime = millis();
     if(delay_duration)
     {
