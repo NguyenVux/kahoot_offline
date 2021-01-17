@@ -8,11 +8,11 @@
 #include "led.h"
 
 #define DEFAULT_BROADCAST_TIMEOUT 1000
-#define DEFAULT_SEND_NUM 1
+#define DEFAULT_SEND_NUM UINT32_MAX
 
 /*
 @brief Broadcast until time out or num is reached
-@param num  How many retry to send data
+@param num  How many retries
 */
 esp_err_t startBroadcast(const uint8_t *peer_addr,
                          const uint8_t *data,
