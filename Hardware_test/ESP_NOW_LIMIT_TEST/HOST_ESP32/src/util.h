@@ -9,7 +9,7 @@ bool cmpArr(
     if (n1 != n2)
         return false;
     for (size_t i = 0; i < n1; ++i)
-        if (!cmp(a, b))
+        if (!cmp(a[i], b[i]))
             return false;
     return true;
 }
