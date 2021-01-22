@@ -45,7 +45,8 @@ void registerClient(const uint8_t *mac, const uint8_t *incomingData, int len)
 
 void receiveAnswer(const uint8_t *mac, const uint8_t *incomingData, int len)
 {
-
+    Serial.write(mac, 6);
+    Serial.write(incomingData, len);
 }
 
 void waitReply(size_t mili)
