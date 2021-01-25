@@ -9,12 +9,19 @@
 
 void setup()
 {
-
+    setInterrupt();
 }
 
 void loop()
 {
-    
+    if(mode == PAIRING)
+    {
+        
+    }
+    else
+    {
+        
+    }
 }
 
 
