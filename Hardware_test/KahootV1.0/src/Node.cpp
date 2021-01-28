@@ -9,18 +9,14 @@
 
 void setup()
 {
-    setInterrupt();
+    InitSys();
 }
 
 void loop()
 {
     if(mode == PAIRING)
     {
-        
-    }
-    else
-    {
-        
+        PairMode();
     }
 }
 

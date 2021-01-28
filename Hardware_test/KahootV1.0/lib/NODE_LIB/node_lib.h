@@ -9,7 +9,7 @@
 #include <ESP8266WiFi.h>
 #include <espnow.h>
 #include <TimerOne.h>
-
+#include <EEPROM.h>
 #define PAIR_TIME 60
 #define LIGH_SLEEP_TIME_OUT 60
 // #define PAIR_SUCCES 1
