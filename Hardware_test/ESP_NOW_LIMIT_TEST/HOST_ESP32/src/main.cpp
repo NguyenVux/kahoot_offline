@@ -3,24 +3,19 @@ This Code made by kahoot_offline team 9/1/2020
 FOR "HOST" 
 Note:
 Code này dùng để test số lượng node mà esp8266/esp32 có thể nhận trong cùng một thời điểm.
-
-Để test:
-1. Đầu tiên HOST sẽ delay và boardcast tín hiệu nào đó ...
-2. Chờ và nhận tín hiệu
 */
 
-// #include <Arduino.h>
-// #include <WiFi.h>
-// #include <esp_now.h>
-// #include "led.h"
-// #include "stopwatch.h"
+#include <Arduino.h>
+#include <WiFi.h>
+#include <esp_now.h>
+#include "led.h"
 #include "broadcast.h"
 #include "client.h"
+#include "util.h"
 
-#define LED 2
 #define CHANNEL 0
+#define LISTEN_BROADCAST_REPLY_TIMEOUT 10000
 
-// Led led(LED);
 // Broadcast MAC address
 uint8_t macAddr[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 
@@ -32,40 +27,37 @@ void serialPrintMAC(const uint8_t *addr)
     Serial.print(str);
 }
 
-// callback function that will be executed when data is received
-// void OnDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len)
-// {
-//     // In dia chi mac nhan duoc
-//     char macStr[18];
-//     Serial.print("MacFrom");
-//     snprintf(macStr, sizeof(macStr), "%02x:%02x:%02x:%02x:%02x:%02x",
-//              mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-//     Serial.print(macStr);
-//     //memcpy(&myData, incomingData, sizeof(myData));
-//     Serial.print("Bytes received: ");
-//     Serial.println(len);
-//     Serial.print("Data: ");
-//     //Serial.println(myData);
-//     Serial.println();
-// }
-// callback when data is sent
-// void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status)
-// {
-//     char macStr[18];
-//     Serial.print("Packet to: ");
-//     // Copies the sender mac address to a string
-//     snprintf(macStr, sizeof(macStr), "%02x:%02x:%02x:%02x:%02x:%02x",
-//              mac_addr[0], mac_addr[1], mac_addr[2], mac_addr[3], mac_addr[4], mac_addr[5]);
-//     Serial.print(macStr);
-//     Serial.print(" send status:\t");
-//     Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
-// }
-
-void receiveReply(const uint8_t *mac, const uint8_t *incomingData, int len)
+void registerClient(const uint8_t *mac, const uint8_t *incomingData, int len)
 {
-    //CHUA THONG NHAT CACH TAO ID, NEN DE TRONG PHAN ID
-    if(!client::search(mac))
+    //CHUA THONG NHAT CACH TAO ID, NEN ID = 0
+    if (!client::search(mac))
+    {
         client::add(mac, 0);
+        Serial.print("NEW CLIENT: ");
+    }
+    else
+    {
+        Serial.print("DUPLICATE: ");
+    }
+    serialPrintMAC(mac);
+    Serial.println();
+}
+
+void receiveAnswer(const uint8_t *mac, const uint8_t *incomingData, int len)
+{
+    Serial.write(mac, 6);
+    Serial.write(incomingData, len);
+}
+
+void waitReply(size_t mili)
+{
+    Stopwatch<> waitReply;
+    waitReply.start();
+    while (waitReply.elapsed() <= LISTEN_BROADCAST_REPLY_TIMEOUT)
+        ;
+    Serial.print("TOTAL: ");
+    Serial.print(client::size());
+    Serial.println();
 }
 
 void setup()
@@ -97,20 +89,13 @@ void setup()
     Serial.println(WiFi.macAddress());
     auto sendData = DEFAULT_BROADCAST_TIMEOUT;
 
-    esp_now_register_recv_cb(receiveReply);
-    startBroadcast(macAddr, (uint8_t *)&sendData, sizeof(sendData));
-}
+    esp_now_register_recv_cb(registerClient);
 
-int lastsize = 0;
+    startBroadcast(macAddr, (uint8_t *)&sendData, sizeof(sendData));
+    waitReply(LISTEN_BROADCAST_REPLY_TIMEOUT);
+
+    esp_now_register_recv_cb(receiveAnswer);
+}
 void loop()
 {
-    if (lastsize != client::size())
-    {
-        Serial.print("Found: no.");
-        Serial.print(lastsize);
-        Serial.print(" MAC ");
-        serialPrintMAC(client::get(lastsize)->macAddr);
-        Serial.println();
-        lastsize++;
-    }
 }

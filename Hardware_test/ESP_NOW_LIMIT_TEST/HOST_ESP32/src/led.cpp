@@ -10,11 +10,6 @@ void Led::setPin(uint8_t ledPin)
     pin = ledPin;
 }
 
-// unsigned long Led::getInterval() const
-// {
-//     return interval;
-// }
-
 void Led::on()
 {
     ledMode = ON;

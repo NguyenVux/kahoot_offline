@@ -21,7 +21,7 @@ clientInfo_t *client::get(size_t idx)
     return &clientInfo[idx];
 }
 
-clientInfo_t *search(const uint8_t *macAddr)
+clientInfo_t *client::search(const uint8_t *macAddr)
 {
     for (int i = 0; i < clientSize; ++i)
     {
@@ -30,6 +30,7 @@ clientInfo_t *search(const uint8_t *macAddr)
     }
     return NULL;
 }
+
 clientInfo_t *search(uint8_t id)
 {
     for (int i = 0; i < clientSize; ++i)

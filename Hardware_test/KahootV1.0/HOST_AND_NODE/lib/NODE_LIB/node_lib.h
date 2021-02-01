@@ -8,12 +8,36 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <espnow.h>
-
-
+#include <TimerOne.h>
+#include <EEPROM.h>
 #define PAIR_TIME 60
-#define PAIR_SUCCES 1
-#define PAIR_FAIL_TIME_OUT 2
-#define PAIRING 3
+#define LIGH_SLEEP_TIME_OUT 60
+// #define PAIR_SUCCES 1
+// #define PAIR_FAIL_TIME_OUT 2
+// #define PAIRING 3
+enum button_pin
+{
+    button1 = 12,
+    button2,
+    button3,
+    button4,
+};
+
+enum MODE
+{
+    RUNNING,
+    PAIRING
+};
+
+enum PAIRING_RESULT
+{
+    PAIRING_SUCCES,
+    PAIRING_FAIL,
+    PARING_TIME_OUT
+};
+uint64_t pairing_timer = 0;
+uint64_t light_sleep_timer = 0;
+
 /**
  * Struct này sync giữa host và node cho việc gửi nhận data
  * trong struct có 1 byte duy nhất, mỗi bit tương ứng với một nút nhấn
@@ -44,7 +68,7 @@ MAC_ADDR Host_addr;
  * Đọc giá trị các nút nhấn
  */
 button_data ReadButtons();
-
+button_data btn_data;
 /*Cài đặt interrupt cho các nút nhấn*/
 void setInterrupt();
 
@@ -67,7 +91,10 @@ void OnDataSent(uint8_t *mac_addr, uint8_t sendStatus);
  * Khi đọc được 2 nút nhấn đồng thời chuyển vào "chế độ nhận liên tục" từ bất kì node nào trong thời gian PAIR_TIME,
  * để phân biệt host thì data đọc được phải là 1 byte có giá trị 255.
  */
-int In_pair_mode = 0;
+
+//int In_pair_mode = 0;
+MODE mode = RUNNING;
+PAIRING_RESULT result;
 /* note: 
 PAIR_SUCCES: đọc thành công
 PAIR_FAIL_TIME_OUT: hết thời gian,  ngủ tiếp

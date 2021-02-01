@@ -9,12 +9,15 @@
 
 void setup()
 {
-
+    InitSys();
 }
 
 void loop()
 {
-    
+    if(mode == PAIRING)
+    {
+        PairMode();
+    }
 }
 
 

@@ -4,15 +4,16 @@
 #include <WiFi.h>
 #include <esp_now.h>
 #include "client.h"
-#include "stopwatch.h"
+#include "util.h"
 #include "led.h"
 
 #define DEFAULT_BROADCAST_TIMEOUT 1000
 #define DEFAULT_SEND_NUM UINT32_MAX
 
 /*
-@brief Broadcast until time out or num is reached
+@brief Broadcast until timeout or num is reached
 @param num  How many retries
+@returns esp_err_t from esp_now_send
 */
 esp_err_t startBroadcast(const uint8_t *peer_addr,
                          const uint8_t *data,
