@@ -1,26 +1,25 @@
 /****
  *  By kahoot_offline team 11/1/2020
 ****/
-#ifndef _NODE_LIB_
-#define _NODE_LIB_
-#ifdef ESP8266
+
 
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <espnow.h>
-#include <TimerOne.h>
 #include <EEPROM.h>
-#define PAIR_TIME 60
+#define PAIR_TIME 10000
 #define LIGH_SLEEP_TIME_OUT 60
 // #define PAIR_SUCCES 1
 // #define PAIR_FAIL_TIME_OUT 2
 // #define PAIRING 3
+
+
 enum button_pin
 {
     button1 = 12,
     button2,
     button3,
-    button4,
+    button4 = 0,
 };
 
 enum MODE
@@ -35,8 +34,6 @@ enum PAIRING_RESULT
     PAIRING_FAIL,
     PARING_TIME_OUT
 };
-uint64_t pairing_timer = 0;
-uint64_t light_sleep_timer = 0;
 
 /**
  * Struct này sync giữa host và node cho việc gửi nhận data
@@ -62,16 +59,21 @@ struct mac_addr
 typedef struct mac_addr MAC_ADDR;
 
 //địa chỉ của host
-MAC_ADDR Host_addr;
 
 /**
  * Đọc giá trị các nút nhấn
  */
+extern unsigned long pairing_timer;
+extern unsigned long light_sleep_timer;
+extern MAC_ADDR Host_addr;
+extern button_data btn_data;
+extern MODE mode;
+extern PAIRING_RESULT result;
 button_data ReadButtons();
-button_data btn_data;
+
 /*Cài đặt interrupt cho các nút nhấn*/
 void setInterrupt();
-
+void interupt();
 /*Huỷ Cài đặt interrupt cho các nút nhấn*/
 void unsetInterrupt();
 
@@ -93,8 +95,7 @@ void OnDataSent(uint8_t *mac_addr, uint8_t sendStatus);
  */
 
 //int In_pair_mode = 0;
-MODE mode = RUNNING;
-PAIRING_RESULT result;
+
 /* note: 
 PAIR_SUCCES: đọc thành công
 PAIR_FAIL_TIME_OUT: hết thời gian,  ngủ tiếp
@@ -117,5 +118,3 @@ void OnWakeUp();
 */
 void InitSys();
 
-#endif
-#endif
