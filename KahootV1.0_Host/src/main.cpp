@@ -3,8 +3,21 @@
 #include <WiFi.h>
 #include <esp_now.h>
 #include <Led.h>
+#include <StateBase.h>
 Led main_led(2);
-void (*state_loop)() = []() {};
+State state;
+
+// check if there is any request from PC through Serial
+bool listenRequest()
+{
+  return false;
+}
+
+// read request from PC
+State::state_t readRequest()
+{
+  return State::Idle;
+}
 
 void setup()
 {
@@ -19,13 +32,14 @@ void setup()
     return;
   }
   main_led.blink(1000);
-
-
 }
 
 void loop()
 {
+  if (listenRequest())
+  {
+    state.setCurState(readRequest());
+  }
   main_led.update();
-
-  state_loop();
+  state->loop();
 }
