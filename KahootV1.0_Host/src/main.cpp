@@ -28,12 +28,15 @@ void loop()
     SerialHeader header;
     if (!parseHeader(header, Serial))
       Serial.println("[ERROR] Cannot parse Serial header");
-    state.setCurState(header.changeState);
-    //TODO: Handle fallback if reset state failed
-    if (header.resetState)
+    else
     {
-      state.resetCurState();
-      state->init();
+      state.setCurState(header.changeState);
+      //TODO: Handle fallback if reset state failed
+      if (header.resetState)
+      {
+        state.resetCurState();
+        state->init();
+      }
     }
   }
   else

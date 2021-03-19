@@ -22,6 +22,8 @@ bool StatePairing::init(HardwareSerial &serial)
             return false;
         }
     }
+
+    return true;
 }
 
 void StatePairing::loop()
