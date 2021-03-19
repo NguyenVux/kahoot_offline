@@ -1,23 +1,8 @@
-// #include <header.h>
-#include <Arduino.h>
-#include <WiFi.h>
-#include <esp_now.h>
-#include <Led.h>
-#include <StateBase.h>
+#include <header.h>
+#include <StatePairing.h>
+#include <SerialIO.h>
 Led main_led(2);
 State state;
-
-// check if there is any request from PC through Serial
-bool listenRequest()
-{
-  return false;
-}
-
-// read request from PC
-State::state_t readRequest()
-{
-  return State::Idle;
-}
 
 void setup()
 {
@@ -28,7 +13,7 @@ void setup()
 
   if (esp_now_init() != ESP_OK)
   {
-    Serial.println("Error initializing ESP-NOW");
+    Serial.println("[ERROR] Initialize ESP-NOW failed");
     return;
   }
   main_led.blink(1000);
@@ -36,10 +21,23 @@ void setup()
 
 void loop()
 {
-  if (listenRequest())
-  {
-    state.setCurState(readRequest());
-  }
   main_led.update();
-  state->loop();
+
+  if (Serial.available())
+  {
+    SerialHeader header;
+    if (!parseHeader(header, Serial))
+      Serial.println("[ERROR] Cannot parse Serial header");
+    state.setCurState(header.changeState);
+    //TODO: Handle fallback if reset state failed
+    if (header.resetState)
+    {
+      state.resetCurState();
+      state->init();
+    }
+  }
+  else
+  {
+    state->loop();
+  }
 }

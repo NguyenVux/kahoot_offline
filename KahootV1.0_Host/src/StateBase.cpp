@@ -1,14 +1,16 @@
 #include <StateBase.h>
+#include <StatePairing.h>
 
 StateBase *stateContainer[] = {
     new StateBase(),
+    new StatePairing(),
 };
 
-void StateBase::init(void *param) {}
+bool StateBase::init(HardwareSerial &) { return true; }
 
 void StateBase::loop() {}
 
-void StateBase::clone(StateBase *ptr) {}
+void StateBase::clone(StateBase *) {}
 
 State::state_t State::getCurStateName() const
 {
@@ -29,4 +31,9 @@ StateBase *State::setCurState(state_t state)
 {
     curState = state;
     return getCurState();
+}
+
+void State::resetCurState()
+{
+    stateContainer[curState]->clone(stateContainer[curState]);
 }
