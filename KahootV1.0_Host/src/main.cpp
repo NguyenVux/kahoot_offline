@@ -38,6 +38,7 @@ void loop()
         state->init();
       }
     }
+    Serial.flush(); //Not sure about this, but just for precaution
   }
   else
   {
