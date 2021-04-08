@@ -5,6 +5,7 @@ button_data ReadButtons(){
 
     button_data result = {0b00000000};
     result.button = digitalRead(button1)|digitalRead(button2)<<1|digitalRead(button3)<<2|digitalRead(button4)<<3; // shifting bit to correct order of button
+    //result.button = (digitalRead(button1)|digitalRead(button2)<<1|digitalRead(button3)<<2|digitalRead(button4)<<3) ^ 0b1111; // shifting bit to correct order of button
     return result;
 };
 
@@ -13,7 +14,7 @@ void setInterrupt(){
     static uint8_t interupt_pin = 16;
     digitalPinToInterrupt(interupt_pin); //GPPIO 16 as interupt
     pinMode(interupt_pin,INPUT_PULLUP);
-    attachInterrupt(interupt_pin,interupt,RISING);
+    attachInterrupt(interupt_pin,interupt,FALLING);
 
 };
 
@@ -83,8 +84,8 @@ void OnWakeUp(){
 
 void interupt()
 {
-    Serial.print("btn press");
     button_data d = ReadButtons();
+    Serial.println(d.button,HEX);
     if(mode == RUNNING && !d.button && !(d.button & d.button-1))
     {
         esp_now_send(Host_addr.address,(uint8_t*)&d,sizeof(d));
@@ -93,6 +94,15 @@ void interupt()
         mode = PAIRING;
         pairing_timer = millis();
     }
+    // if(mode == RUNNING)
+    // {
+    //     if(d.button == 0b00001111)
+    //     {
+    //         mode = PAIRING;
+    //         pairing_timer = millis();
+    //         return;
+    //     }
+    // }
 }
 /**
  * khởi tạo serial boardrate 115200

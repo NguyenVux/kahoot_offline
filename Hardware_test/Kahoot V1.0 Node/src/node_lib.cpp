@@ -101,7 +101,6 @@ ICACHE_RAM_ATTR void interupt()
     //Serial.println("btn press");
     button_data d = ReadButtons();
     d.button = d.button ^ 0x0f;
-    Serial.println(d.button,BIN);
     if (mode == RUNNING && !(d.button & (d.button - 1)))
     {
         esp_now_send(Host_addr.address, (uint8_t *)&d, sizeof(d));
@@ -118,6 +117,14 @@ ICACHE_RAM_ATTR void interupt()
  * Khởi tạo chế độ các nút nhấn
  * khởi tạo chế độ ngủ, setup interrupt các nút nhấn khi kích hoạt nút nhấn bất kì gọi hàm OnWakeUp; 
 */
+void serialPrintMAC(const uint8_t *addr)
+{
+    char str[18];
+    snprintf(str, sizeof(str), MACSTR,
+             MAC2STR(addr));
+    Serial.print(str);
+}
+
 void InitSys()
 {
     Serial.begin(9600);
@@ -130,6 +137,7 @@ void InitSys()
     EEPROM.end();
 
     WiFi.mode(WIFI_STA);
+
     esp_now_init();
     esp_now_set_self_role(ESP_NOW_ROLE_COMBO);
     esp_now_register_recv_cb(OnDataRecv);
@@ -139,6 +147,7 @@ void InitSys()
     pinMode(button2, INPUT_PULLUP);
     pinMode(button3, INPUT_PULLUP);
     pinMode(button4, INPUT_PULLUP);
-
+    Serial.print("Broadcasting MAC address from ");
+    Serial.println(WiFi.macAddress());
     //setInterrupt();
 };

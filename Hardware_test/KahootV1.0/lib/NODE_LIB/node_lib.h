@@ -92,7 +92,7 @@ void OnDataSent(uint8_t *mac_addr, uint8_t sendStatus);
  */
 
 //int In_pair_mode = 0;
-MODE mode = RUNNING;
+extern MODE mode = RUNNING;
 PAIRING_RESULT result;
 /* note: 
 PAIR_SUCCES: đọc thành công

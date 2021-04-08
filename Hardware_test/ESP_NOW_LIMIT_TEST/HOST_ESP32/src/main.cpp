@@ -1,101 +1,69 @@
-/*
-This Code made by kahoot_offline team 9/1/2020
-FOR "HOST" 
-Note:
-Code này dùng để test số lượng node mà esp8266/esp32 có thể nhận trong cùng một thời điểm.
-*/
-
-#include <Arduino.h>
-#include <WiFi.h>
 #include <esp_now.h>
-#include "led.h"
-#include "broadcast.h"
-#include "client.h"
-#include "util.h"
+#include <WiFi.h>
 
-#define CHANNEL 0
-#define LISTEN_BROADCAST_REPLY_TIMEOUT 10000
+// REPLACE WITH YOUR RECEIVER MAC Address
+uint8_t broadcastAddress[] = {0xDC,0x4F,0x22,0x11,0x39,0xC1};
 
-// Broadcast MAC address
-uint8_t macAddr[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+// Structure example to send data
+// Must match the receiver structure
+typedef struct struct_message {
+  char a[32];
+  int b;
+  float c;
+  String d;
+  bool e;
+} struct_message;
 
-void serialPrintMAC(const uint8_t *addr)
-{
-    char str[18];
-    snprintf(str, sizeof(str), MACSTR,
-             MAC2STR(addr));
-    Serial.print(str);
+// Create a struct_message called myData
+struct_message myData;
+
+// callback when data is sent
+void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
+  Serial.print("\r\nLast Packet Send Status:\t");
+  Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
 }
+ 
+void setup() {
+  // Init Serial Monitor
+  Serial.begin(115200);
+ 
+  // Set device as a Wi-Fi Station
+  WiFi.softAP("sender", "sendersender", 0, false);
+  WiFi.mode(WIFI_AP_STA);
+	WiFi.mode(WIFI_AP_STA);
+  WiFi.disconnect();
+  // Init ESP-NOW
+  if (esp_now_init() != ESP_OK) {
+    Serial.println("Error initializing ESP-NOW");
+    return;
+  }
 
-void registerClient(const uint8_t *mac, const uint8_t *incomingData, int len)
-{
-    //CHUA THONG NHAT CACH TAO ID, NEN ID = 0
-    if (!client::search(mac))
-    {
-        client::add(mac, 0);
-        Serial.print("NEW CLIENT: ");
-    }
-    else
-    {
-        Serial.print("DUPLICATE: ");
-    }
-    serialPrintMAC(mac);
-    Serial.println();
+  // Once ESPNow is successfully Init, we will register for Send CB to
+  // get the status of Trasnmitted packet
+  esp_now_register_send_cb(OnDataSent);
+  
+  // Register peer
+  esp_now_peer_info_t peerInfo;
+  memcpy(peerInfo.peer_addr, broadcastAddress, 6);
+  peerInfo.channel = 0;  
+  peerInfo.encrypt = false;
+  
+  // Add peer        
+  if (esp_now_add_peer(&peerInfo) != ESP_OK){
+    Serial.println("Failed to add peer");
+    return;
+  }
 }
+ 
+void loop() {
+  // Set values to send
+  char myData  = 0xff;
 
-void receiveAnswer(const uint8_t *mac, const uint8_t *incomingData, int len)
-{
-    Serial.write(mac, 6);
-    Serial.write(incomingData, len);
-}
-
-void waitReply(size_t mili)
-{
-    Stopwatch<> waitReply;
-    waitReply.start();
-    while (waitReply.elapsed() <= LISTEN_BROADCAST_REPLY_TIMEOUT)
-        ;
-    Serial.print("TOTAL: ");
-    Serial.print(client::size());
-    Serial.println();
-}
-
-void setup()
-{
-    Serial.begin(115200);
-
-    WiFi.mode(WIFI_STA);
-    WiFi.disconnect();
-
-    if (esp_now_init() != ESP_OK)
-    {
-        Serial.println("Error initializing ESP-NOW");
-        return;
-    }
-
-    // Prepare to broadcast this MAC address
-    esp_now_peer_info_t peerInfo;
-    memcpy(peerInfo.peer_addr, macAddr, 6);
-    peerInfo.channel = CHANNEL;
-    peerInfo.encrypt = false;
-
-    if (esp_now_add_peer(&peerInfo) != ESP_OK)
-    {
-        Serial.println("Failed to add peer");
-        return;
-    }
-
-    Serial.print("Broadcasting MAC address from ");
-    Serial.println(WiFi.macAddress());
-    auto sendData = DEFAULT_BROADCAST_TIMEOUT;
-
-    esp_now_register_recv_cb(registerClient);
-
-    startBroadcast(macAddr, (uint8_t *)&sendData, sizeof(sendData));
-    waitReply(LISTEN_BROADCAST_REPLY_TIMEOUT);
-
-    esp_now_register_recv_cb(receiveAnswer);
-}
-void loop()
-{
+  // Send message via ESP-NOW
+  esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &myData, sizeof(myData));
+   
+  if (result != ESP_OK) {
+    Serial.println("Error sending the data");
+  }
+  delay(5000);
 }
