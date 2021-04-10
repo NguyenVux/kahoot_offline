@@ -20,9 +20,9 @@ button_data ReadButtons()
 /*Cài đặt interrupt cho các nút nhấn*/
 void setInterrupt()
 {
-    static uint8_t interupt_pin = 15; //GPPIO 16 as interupt
+    static uint8_t interupt_pin = 5; //GPPIO 16 as interupt
     pinMode(interupt_pin, INPUT_PULLUP);
-    attachInterrupt(digitalPinToInterrupt(interupt_pin), interupt2, FALLING);
+    attachInterrupt(digitalPinToInterrupt(interupt_pin), interupt, FALLING);
 };
 
 /*Huỷ Cài đặt interrupt cho các nút nhấn*/
@@ -103,7 +103,7 @@ bool is_bool(uint8_t i)
 {
     return (i != 0) && ((i & (i - 1)) == 0);
 }
-ICACHE_RAM_ATTR void interupt()
+void ICACHE_RAM_ATTR interupt()
 {
     //Serial.println("btn press");
     button_data d = ReadButtons();
@@ -181,5 +181,4 @@ void InitSys()
     }
     Serial.println(Host_addr.address[5],HEX);
     setInterrupt();
-    //setInterrupt();
 };

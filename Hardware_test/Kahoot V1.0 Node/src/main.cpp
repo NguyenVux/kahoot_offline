@@ -12,14 +12,14 @@ void setup()
 
 void loop()
 {
-    // if(mode == PAIRING)
-    // {
-    //     PairMode();
-    // }
-    // else
-    // {
-    //     //interupt();
-    // }
+    if(mode == PAIRING)
+    {
+        PairMode();
+    }
+    //else
+    //{
+        //interupt();
+    //}
 
     
     //delay(500);
