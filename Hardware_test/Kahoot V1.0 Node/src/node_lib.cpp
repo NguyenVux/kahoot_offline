@@ -20,9 +20,9 @@ button_data ReadButtons()
 /*Cài đặt interrupt cho các nút nhấn*/
 void setInterrupt()
 {
-    static uint8_t interupt_pin = 5; //GPPIO 16 as interupt
+    static uint8_t interupt_pin = 15; //GPPIO 16 as interupt
     pinMode(interupt_pin, INPUT_PULLUP);
-    attachInterrupt(digitalPinToInterrupt(interupt_pin), interupt, FALLING);
+    attachInterrupt(digitalPinToInterrupt(interupt_pin), interupt2, FALLING);
 };
 
 /*Huỷ Cài đặt interrupt cho các nút nhấn*/
@@ -47,6 +47,10 @@ void OnDataRecv(uint8_t *mac, uint8_t *incomingData, uint8_t len)
             {
                 result = PAIRING_FAIL;
                 mode = RUNNING;
+                EEPROM.begin(7);
+                EEPROM.put(0, Host_addr);
+                EEPROM.put(6,false);
+                EEPROM.end();
             }
             else
             {
@@ -82,8 +86,9 @@ void PairMode()
 //thông báo(chớp led và buzz), Lưu HOST_ADDR và chuyển vào chế độ ngủ.
 void PairSuccess()
 {
-    EEPROM.begin(6);
+    EEPROM.begin(7);
     EEPROM.put(0, Host_addr);
+    EEPROM.put(6,true);
     EEPROM.end();
     result = PAIRING_SUCCES;
     mode = RUNNING;
@@ -94,21 +99,31 @@ void PairSuccess()
 void OnWakeUp(){
 
 };
-
+bool is_bool(uint8_t i)
+{
+    return (i != 0) && ((i & (i - 1)) == 0);
+}
 ICACHE_RAM_ATTR void interupt()
 {
     //Serial.println("btn press");
     button_data d = ReadButtons();
     d.button = d.button ^ 0x0f;
-    if (mode == RUNNING && !(d.button & (d.button - 1)))
+    Serial.println(is_bool(d.button),BIN);
+    if (mode == RUNNING)
     {
-        esp_now_send(Host_addr.address, (uint8_t *)&d, sizeof(d));
+        //esp_now_send(Host_addr.address, (uint8_t *)&d, sizeof(d));
     }
-    else
-    {
-        mode = PAIRING;
-        pairing_timer = millis();
-    }
+    // else
+    // {
+    //     mode = PAIRING;
+    //     pairing_timer = millis();
+    // }
+}
+unsigned int counter = 0;
+ICACHE_RAM_ATTR void interupt2()
+{
+    counter++;
+    Serial.println(counter);
 }
 /**
  * khởi tạo serial boardrate 115200
@@ -131,8 +146,10 @@ void InitSys()
     mode = RUNNING;
     pairing_timer = 0;
     light_sleep_timer = 0;
-    EEPROM.begin(6);
+    EEPROM.begin(7);
     EEPROM.get(0, Host_addr);
+    bool is_paired = false;
+    EEPROM.get(6,is_paired);
     EEPROM.end();
 
     WiFi.disconnect();
@@ -143,7 +160,13 @@ void InitSys()
     esp_now_set_self_role(ESP_NOW_ROLE_COMBO);
     esp_now_register_recv_cb(OnDataRecv);
     esp_now_register_send_cb(OnDataSent);
-
+    if(is_paired && esp_now_add_peer(Host_addr.address, ESP_NOW_ROLE_MAX, 0, NULL, 0))
+    {
+        Serial.println("Paired successed");
+    }
+    else{
+        Serial.println("Paired Failed");
+    }
     pinMode(button1, INPUT_PULLUP);
     pinMode(button2, INPUT_PULLUP);
     pinMode(button3, INPUT_PULLUP);
@@ -157,5 +180,6 @@ void InitSys()
         Serial.print(":");
     }
     Serial.println(Host_addr.address[5],HEX);
+    setInterrupt();
     //setInterrupt();
 };
