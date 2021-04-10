@@ -37,8 +37,6 @@ void unsetInterrupt(){
 */
 void OnDataRecv(uint8_t *mac, uint8_t *incomingData, uint8_t len)
 {
-    Serial.print("data:");
-    Serial.println(*incomingData,HEX);
     if (mode == PAIRING)
     {
         if (*incomingData == 0xff)
@@ -73,7 +71,7 @@ void OnDataSent(uint8_t *mac_addr, uint8_t sendStatus){
 void PairMode()
 {
     Serial.print("PAIR MODE: ");
-    Serial.println(millis() - pairing_timer,DEC);
+    Serial.println(millis() - pairing_timer, DEC);
     if (millis() - pairing_timer > PAIR_TIME)
     {
         mode = RUNNING;
@@ -89,6 +87,7 @@ void PairSuccess()
     EEPROM.end();
     result = PAIRING_SUCCES;
     mode = RUNNING;
+    Serial.println("PAIRED SUCCESS");
 };
 
 //huỷ interrupt để khỏi gọi nữa, đọc giá trị các nút nhấn, gửi button_data cho host,setInterrupt lại ,sau đó ngủ tiếp
@@ -136,6 +135,8 @@ void InitSys()
     EEPROM.get(0, Host_addr);
     EEPROM.end();
 
+    WiFi.disconnect();
+    ESP.eraseConfig();
     WiFi.mode(WIFI_STA);
 
     esp_now_init();
@@ -147,7 +148,14 @@ void InitSys()
     pinMode(button2, INPUT_PULLUP);
     pinMode(button3, INPUT_PULLUP);
     pinMode(button4, INPUT_PULLUP);
-    Serial.print("Broadcasting MAC address from ");
+    Serial.print("MAC address:");
     Serial.println(WiFi.macAddress());
+    Serial.print("HOST ADDR: ");
+    for(uint8_t i =0 ; i < 5; i++)
+    {
+        Serial.print(Host_addr.address[i],HEX);
+        Serial.print(":");
+    }
+    Serial.println(Host_addr.address[5],HEX);
     //setInterrupt();
 };
