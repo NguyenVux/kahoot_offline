@@ -1,1 +1,5 @@
 *.ini
+
+
+#don't ignore platformio.ini
+!platformio.ini
