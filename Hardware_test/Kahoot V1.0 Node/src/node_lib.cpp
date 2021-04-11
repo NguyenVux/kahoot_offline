@@ -99,31 +99,24 @@ void PairSuccess()
 void OnWakeUp(){
 
 };
-bool is_bool(uint8_t i)
+inline bool is_bool(uint8_t i)
 {
     return (i != 0) && ((i & (i - 1)) == 0);
 }
 void ICACHE_RAM_ATTR interupt()
 {
-    //Serial.println("btn press");
     button_data d = ReadButtons();
     d.button = d.button ^ 0x0f;
     Serial.println(is_bool(d.button),BIN);
-    if (mode == RUNNING)
+    if (mode == RUNNING && is_bool(d.button))
     {
-        //esp_now_send(Host_addr.address, (uint8_t *)&d, sizeof(d));
+        esp_now_send(Host_addr.address, (uint8_t *)&d, sizeof(d));
     }
-    // else
-    // {
-    //     mode = PAIRING;
-    //     pairing_timer = millis();
-    // }
-}
-unsigned int counter = 0;
-ICACHE_RAM_ATTR void interupt2()
-{
-    counter++;
-    Serial.println(counter);
+    else
+    {
+        mode = PAIRING;
+         pairing_timer = millis();
+    }
 }
 /**
  * khởi tạo serial boardrate 115200
