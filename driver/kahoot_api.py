@@ -4,8 +4,6 @@ import serial
 import threading
 from time import sleep
 
-
-
 class kahoot_connect:
     #init system
     def __init__(self,port):
@@ -17,6 +15,8 @@ class kahoot_connect:
     #start thread read from serial
     def start(self):    
         serial_port = serial.Serial(self.port, self.baud, timeout=0)
+        #need check
+        self.connected = True
         self.thread = threading.Thread(target=self.read_from_port, args=(serial_port,))
         self.thread.start()
     
@@ -37,7 +37,7 @@ class kahoot_connect:
     # decript and put data into list
     def handle_data(self,data):
         #debug
-        print("get: RAW:",data.decode(),end=" ")
+        print("get: RAW:",data,end=" ")
 
         if(len(data)!=7):
             return
@@ -58,8 +58,9 @@ class kahoot_connect:
             self.connected = True
         while True:
             # print("test")
-            reading = ser.readline()
+            reading = ser.read(9)
             if(len(reading)!=0):
+                print(reading)
                 self.handle_data(reading)
 
     #return all availble port
@@ -97,11 +98,13 @@ class kahoot_connect:
         return data_return
 
 # test code
-kc  = kahoot_connect('COM4')
+kc  = kahoot_connect('COM7')
 kc.start()
 
 while(1):
     sleep(1)
-    print(kc.readData())
+    data = kc.readData()
+    if(data != []):
+        print(data)
 
 print(kc.connected)
