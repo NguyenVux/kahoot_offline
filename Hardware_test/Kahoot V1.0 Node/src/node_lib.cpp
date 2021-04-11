@@ -37,8 +37,6 @@ void unsetInterrupt(){
 */
 void OnDataRecv(uint8_t *mac, uint8_t *incomingData, uint8_t len)
 {
-    Serial.print("data:");
-    Serial.println(*incomingData,HEX);
     if (mode == PAIRING)
     {
         if (*incomingData == 0xff)
@@ -49,6 +47,10 @@ void OnDataRecv(uint8_t *mac, uint8_t *incomingData, uint8_t len)
             {
                 result = PAIRING_FAIL;
                 mode = RUNNING;
+                EEPROM.begin(7);
+                EEPROM.put(0, Host_addr);
+                EEPROM.put(6,false);
+                EEPROM.end();
             }
             else
             {
@@ -73,7 +75,7 @@ void OnDataSent(uint8_t *mac_addr, uint8_t sendStatus){
 void PairMode()
 {
     Serial.print("PAIR MODE: ");
-    Serial.println(millis() - pairing_timer,DEC);
+    Serial.println(millis() - pairing_timer, DEC);
     if (millis() - pairing_timer > PAIR_TIME)
     {
         mode = RUNNING;
@@ -84,32 +86,44 @@ void PairMode()
 //thông báo(chớp led và buzz), Lưu HOST_ADDR và chuyển vào chế độ ngủ.
 void PairSuccess()
 {
-    EEPROM.begin(6);
+    EEPROM.begin(7);
     EEPROM.put(0, Host_addr);
+    EEPROM.put(6,true);
     EEPROM.end();
     result = PAIRING_SUCCES;
     mode = RUNNING;
+    Serial.println("PAIRED SUCCESS");
 };
 
 //huỷ interrupt để khỏi gọi nữa, đọc giá trị các nút nhấn, gửi button_data cho host,setInterrupt lại ,sau đó ngủ tiếp
 void OnWakeUp(){
 
 };
-
-ICACHE_RAM_ATTR void interupt()
+bool is_bool(uint8_t i)
+{
+    return (i != 0) && ((i & (i - 1)) == 0);
+}
+void ICACHE_RAM_ATTR interupt()
 {
     //Serial.println("btn press");
     button_data d = ReadButtons();
     d.button = d.button ^ 0x0f;
-    if (mode == RUNNING && !(d.button & (d.button - 1)))
+    Serial.println(is_bool(d.button),BIN);
+    if (mode == RUNNING)
     {
-        esp_now_send(Host_addr.address, (uint8_t *)&d, sizeof(d));
+        //esp_now_send(Host_addr.address, (uint8_t *)&d, sizeof(d));
     }
-    else
-    {
-        mode = PAIRING;
-        pairing_timer = millis();
-    }
+    // else
+    // {
+    //     mode = PAIRING;
+    //     pairing_timer = millis();
+    // }
+}
+unsigned int counter = 0;
+ICACHE_RAM_ATTR void interupt2()
+{
+    counter++;
+    Serial.println(counter);
 }
 /**
  * khởi tạo serial boardrate 115200
@@ -132,22 +146,39 @@ void InitSys()
     mode = RUNNING;
     pairing_timer = 0;
     light_sleep_timer = 0;
-    EEPROM.begin(6);
+    EEPROM.begin(7);
     EEPROM.get(0, Host_addr);
+    bool is_paired = false;
+    EEPROM.get(6,is_paired);
     EEPROM.end();
 
+    WiFi.disconnect();
+    ESP.eraseConfig();
     WiFi.mode(WIFI_STA);
 
     esp_now_init();
     esp_now_set_self_role(ESP_NOW_ROLE_COMBO);
     esp_now_register_recv_cb(OnDataRecv);
     esp_now_register_send_cb(OnDataSent);
-
+    if(is_paired && esp_now_add_peer(Host_addr.address, ESP_NOW_ROLE_MAX, 0, NULL, 0))
+    {
+        Serial.println("Paired successed");
+    }
+    else{
+        Serial.println("Paired Failed");
+    }
     pinMode(button1, INPUT_PULLUP);
     pinMode(button2, INPUT_PULLUP);
     pinMode(button3, INPUT_PULLUP);
     pinMode(button4, INPUT_PULLUP);
-    Serial.print("Broadcasting MAC address from ");
+    Serial.print("MAC address:");
     Serial.println(WiFi.macAddress());
-    //setInterrupt();
+    Serial.print("HOST ADDR: ");
+    for(uint8_t i =0 ; i < 5; i++)
+    {
+        Serial.print(Host_addr.address[i],HEX);
+        Serial.print(":");
+    }
+    Serial.println(Host_addr.address[5],HEX);
+    setInterrupt();
 };

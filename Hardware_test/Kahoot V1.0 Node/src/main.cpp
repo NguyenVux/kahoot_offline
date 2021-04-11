@@ -16,8 +16,12 @@ void loop()
     {
         PairMode();
     }
-    else
-    {
-        interupt();
-    }
+    //else
+    //{
+        //interupt();
+    //}
+
+    
+    //delay(500);
+    
 }

@@ -9,6 +9,7 @@
 #include <EEPROM.h>
 #define PAIR_TIME 10000
 #define LIGH_SLEEP_TIME_OUT 60
+//#define ICACHE_RAM_ATTR
 // #define PAIR_SUCCES 1
 // #define PAIR_FAIL_TIME_OUT 2
 // #define PAIRING 3
@@ -69,11 +70,13 @@ extern MAC_ADDR Host_addr;
 extern button_data btn_data;
 extern MODE mode;
 extern PAIRING_RESULT result;
+extern unsigned int counter;
 button_data ReadButtons();
 
 /*Cài đặt interrupt cho các nút nhấn*/
 void setInterrupt();
 void interupt();
+void interupt2();
 /*Huỷ Cài đặt interrupt cho các nút nhấn*/
 void unsetInterrupt();
 
