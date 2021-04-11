@@ -4,6 +4,14 @@ import serial
 import threading
 from time import sleep
 
+# handle data 
+def checkbit(num, bit):
+    num=int(num)>>(int(bit)-1)
+    if ((num&1)!=0):
+        return 1
+    else:
+        return 0
+
 class kahoot_connect:
     #init system
     def __init__(self,port):
@@ -11,6 +19,7 @@ class kahoot_connect:
         self.port = port
         self.baud = 115200
         self.data = []
+        self.streamIn = bytearray(b'')
 
     #start thread read from serial
     def start(self):    
@@ -19,16 +28,10 @@ class kahoot_connect:
         self.connected = True
         self.thread = threading.Thread(target=self.read_from_port, args=(serial_port,))
         self.thread.start()
-    
-    # handle data 
-    def checkbit(n, k):
-        if n & (1 << (k - 1)):
-            return 1
-        else:
-            return 0
+
     """
     INPUT:
-        bytes: 0 1 2 3 4 5 6
+        bytes: 0 1 2 3 4 5 6 
                 [   mac   ] button
     OUTPUT:
         [     MAC addr       buttons]
@@ -36,20 +39,33 @@ class kahoot_connect:
     """
     # decript and put data into list
     def handle_data(self,data):
-        #debug
-        print("get: RAW:",data,end=" ")
+        
+        self.streamIn.append(data[0])
 
-        if(len(data)!=7):
+        if(len(self.streamIn)<9):
             return
+        
+        #if too long then remove head
+        if(len(self.streamIn)>9):
+            self.streamIn = self.streamIn[len(self.streamIn)-9:]
+
+        #check bytes correction
+        if(self.streamIn[len(self.streamIn)-2] != 0xAA or self.streamIn[len(self.streamIn)-1] != 0x0a): #custom or \n
+                return
+
+        # print("get: RAW:",self.streamIn)
+
         macaddr = ""
-        for i in range(6):
-            macaddr += data[i].hex() + ":"
+        for i in range(6):  
+            macaddr += hex(self.streamIn[i])[2:] + ":"
         #remove :
         macaddr = macaddr[:len(macaddr)-1]
 
-        output = [macaddr,checkbit(data[6],3),checkbit(data[6],2),checkbit(data[6],1),checkbit(data[6],0)]
-        print("DATA:",output)
+        output = [macaddr,checkbit(self.streamIn[6],4),checkbit(self.streamIn[6],3),checkbit(self.streamIn[6],2),checkbit(self.streamIn[6],1)]
+
+        # print("DATA:",output)
         self.data.append(output)
+        self.streamIn = bytearray(b'')
 
     #run as read serial thread
     def read_from_port(self,ser):
@@ -58,9 +74,8 @@ class kahoot_connect:
             self.connected = True
         while True:
             # print("test")
-            reading = ser.read(9)
+            reading = ser.read()
             if(len(reading)!=0):
-                print(reading)
                 self.handle_data(reading)
 
     #return all availble port
@@ -95,6 +110,7 @@ class kahoot_connect:
     #return data and clear cache
     def readData(self):
         data_return = self.data.copy()
+        self.data = []
         return data_return
 
 # test code
@@ -105,6 +121,6 @@ while(1):
     sleep(1)
     data = kc.readData()
     if(data != []):
-        print(data)
+        print(len(data))
 
 print(kc.connected)
