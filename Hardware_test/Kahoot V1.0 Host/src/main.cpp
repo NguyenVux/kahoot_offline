@@ -20,7 +20,12 @@ void OnDataRecv(const uint8_t * mac_addr, const uint8_t *incomingData, int len) 
            mac_addr[0], mac_addr[1], mac_addr[2], mac_addr[3], mac_addr[4], mac_addr[5]);
   Serial.println(macStr);
   Serial.print("data:");
-  Serial.print(*incomingData,BIN);
+  const int plen = 9;
+  char arr[plen] = {mac_addr[0], mac_addr[1], mac_addr[2], mac_addr[3], mac_addr[4], mac_addr[5] ,*incomingData, 0xAA,'\n'};
+  for(int i=0;i<plen;i++)
+      Serial.write(arr[i]);
+  
+  // Serial.print(*incomingData,BIN);
   // Update the structures with the new incoming data
   Serial.println();
 }
@@ -68,5 +73,5 @@ void loop() {
   else {
     Serial.println("Error sending the data");
   }
-  delay(1000);
+  delay(5000);
 }

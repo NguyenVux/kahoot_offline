@@ -18,7 +18,7 @@ class kahoot_connect:
         self.connected = False
         self.port = port
         self.baud = 115200
-        self.data = []
+        self.data = set()
         self.streamIn = bytearray(b'')
 
     #start thread read from serial
@@ -61,10 +61,12 @@ class kahoot_connect:
         #remove :
         macaddr = macaddr[:len(macaddr)-1]
 
-        output = [macaddr,checkbit(self.streamIn[6],4),checkbit(self.streamIn[6],3),checkbit(self.streamIn[6],2),checkbit(self.streamIn[6],1)]
+        output = (macaddr,checkbit(self.streamIn[6],4),checkbit(self.streamIn[6],3),checkbit(self.streamIn[6],2),checkbit(self.streamIn[6],1))
 
         # print("DATA:",output)
-        self.data.append(output)
+        
+        # self.data.append(output)
+        self.data.add(output)
         self.streamIn = bytearray(b'')
 
     #run as read serial thread
@@ -110,7 +112,7 @@ class kahoot_connect:
     #return data and clear cache
     def readData(self):
         data_return = self.data.copy()
-        self.data = []
+        self.data = set()
         return data_return
 
 # test code
@@ -120,7 +122,8 @@ kc.start()
 while(1):
     sleep(1)
     data = kc.readData()
-    if(data != []):
+    if(data != set()):
         print(len(data))
+        print(data)
 
 print(kc.connected)
