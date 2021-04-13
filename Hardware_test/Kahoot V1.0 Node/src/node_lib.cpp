@@ -6,6 +6,9 @@ MAC_ADDR Host_addr;
 button_data btn_data;
 MODE mode;
 PAIRING_RESULT result;
+bool flags = false;
+uint8_t interupt_pin = 5;
+unsigned long last_time = 0;
 
 button_data ReadButtons()
 {
@@ -20,14 +23,12 @@ button_data ReadButtons()
 /*Cài đặt interrupt cho các nút nhấn*/
 void setInterrupt()
 {
-    static uint8_t interupt_pin = 5; //GPPIO 16 as interupt
-    pinMode(interupt_pin, INPUT_PULLUP);
     attachInterrupt(digitalPinToInterrupt(interupt_pin), interupt, FALLING);
 };
 
 /*Huỷ Cài đặt interrupt cho các nút nhấn*/
 void unsetInterrupt(){
-
+    detachInterrupt(digitalPinToInterrupt(interupt_pin));
 };
 
 /**
@@ -105,9 +106,19 @@ inline bool is_bool(uint8_t i)
 }
 void ICACHE_RAM_ATTR interupt()
 {
+
+    if(millis() - last_time > 300)
+    {
+        unsetInterrupt();
+        flags = true;
+    }
+   
+}
+
+void check()
+{
     button_data d = ReadButtons();
     d.button = d.button ^ 0x0f;
-    Serial.println(is_bool(d.button),BIN);
     if (mode == RUNNING && is_bool(d.button))
     {
         esp_now_send(Host_addr.address, (uint8_t *)&d, sizeof(d));
@@ -173,5 +184,7 @@ void InitSys()
         Serial.print(":");
     }
     Serial.println(Host_addr.address[5],HEX);
+    pinMode(interupt_pin, INPUT_PULLUP);
     setInterrupt();
+    flags = false;
 };
