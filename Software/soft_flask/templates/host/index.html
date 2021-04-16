@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Host | KahootClone</title>
+        <link rel = "stylesheet" href = "static/css/host.css">
+        <!-- need to check if this font availble to all ? -->
+        <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Tajawal" rel="stylesheet">
+    </head>
+    <body>
+        <button id = "cancel" onclick = "endGame()">Cancel Game</button>
+        <h2 id = "title">Waiting for players: </h2>
+        <h1 id = "gamePinText"></h1>
+        <textarea style = "width: 700px; height: 500px;" readonly id = 'players'> not availble ferture </textarea>
+        <br>
+        <button id = 'start' onclick = "startGame()">Start Game</button>
+        <br>
+        <br>
+        <script src = "static/socket.io/socket.io.js"></script>
+        <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script> -->
+        <script src = "static/js/libs/jqueryLibrary.js"></script>
+        <script src = "static/js/libs//deparam.js"></script>
+        <script src = "static/js/host.js"></script>
+    </body>
+</html>
+
