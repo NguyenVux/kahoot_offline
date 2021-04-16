@@ -119,14 +119,15 @@ void check()
 {
     button_data d = ReadButtons();
     d.button = d.button ^ 0x0f;
+    Serial.print(d.button);
     if (mode == RUNNING && is_bool(d.button))
     {
         esp_now_send(Host_addr.address, (uint8_t *)&d, sizeof(d));
     }
-    else
+    else if(d.button != 0)
     {
         mode = PAIRING;
-         pairing_timer = millis();
+        pairing_timer = millis();
     }
 }
 /**

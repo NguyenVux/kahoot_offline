@@ -15,12 +15,14 @@ void loop()
     if(mode == PAIRING)
     {
         PairMode();
+        flags = false;
     }
     else if (flags)
     { 
         delay(10);
-        interupt();
+        check();
         setInterrupt();
+        flags = false;
     }
 
     
