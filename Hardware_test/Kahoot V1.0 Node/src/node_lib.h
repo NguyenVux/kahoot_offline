@@ -70,11 +70,15 @@ extern MAC_ADDR Host_addr;
 extern button_data btn_data;
 extern MODE mode;
 extern PAIRING_RESULT result;
+extern uint8_t interupt_pin;
+extern unsigned long last_time;
+extern bool flags;
 button_data ReadButtons();
 
 /*Cài đặt interrupt cho các nút nhấn*/
 void setInterrupt();
 void interupt();
+void check();
 /*Huỷ Cài đặt interrupt cho các nút nhấn*/
 void unsetInterrupt();
 
