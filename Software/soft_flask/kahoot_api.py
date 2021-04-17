@@ -137,7 +137,7 @@ def nope():
 
 if __name__ == '__main__':
     # test code
-    kc  = kahoot_connect('COM7',nope)
+    kc  = kahoot_connect('COM4',nope)
     kc.start()
 
     while(1):

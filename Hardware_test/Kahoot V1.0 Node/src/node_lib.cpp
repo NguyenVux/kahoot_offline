@@ -23,7 +23,7 @@ button_data ReadButtons()
 /*Cài đặt interrupt cho các nút nhấn*/
 void setInterrupt()
 {
-    attachInterrupt(digitalPinToInterrupt(interupt_pin), interupt, FALLING);
+    attachInterrupt(digitalPinToInterrupt(interupt_pin), interupt, RISING);
 };
 
 /*Huỷ Cài đặt interrupt cho các nút nhấn*/

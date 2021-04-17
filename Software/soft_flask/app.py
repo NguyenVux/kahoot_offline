@@ -32,8 +32,8 @@ def updatePlayer():
     global dataBase
     lst = kc.readData()
 
-    for i in lst.keys():
-        if i in MacToName.keys():
+    for i in MacToName.keys():
+        if i in lst:
             lst[MacToName[i]] = lst.pop(i)
 
     ##### V2
@@ -52,9 +52,9 @@ def updatePlayer():
             for i in playerAnswered.keys():
                 # print(playerAnswered[i],cransw)
                 if int(playerAnswered[i]) == int(cransw)-1:
-                    if i not in playerScored.keys():
+                    #if i not in playerScored.keys():
                         playerScore[i]+=1
-                        playerScored[i] = 1
+                        #playerScored[i] = 1
         # print(playerAnswered,playerScore)
         socketio.emit('updatePlayerLobby',PlayerLobby)
     #######
@@ -89,7 +89,7 @@ def updatePlayer():
         correct = quest['correct'][0]
         socketio.emit('questionOver',(playerData,correct))
 
-kc = kahoot_connect('COM7',updatePlayer)
+kc = kahoot_connect('COM4',updatePlayer)
 
 kc.start()
 
