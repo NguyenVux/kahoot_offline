@@ -22,3 +22,22 @@ https://www.youtube.com/watch?v=GG8JtFNiHw0 thấy cũng được đó :v nhưng
 # Thiết lập kết nối và ID giữa ESP-32 và ESP-8266:
 - Sử dụng broadcast để spam MAC address ESP-32 trong 1s.
 - ESP-8266 nhận được broadcast kèm theo thời gian spam của ESP-32. Ngưng không nhận nữa, đợi ESP-32 spam xong.
+
+<b>IMPORTANT CODE </b>
+``` c++
+void resetSettings() {
+  //WiFi_enableSTA(true,true); // must be sta to disconnect erase
+  WiFi.mode(WIFI_STA);
+  #ifdef ESP32
+    WiFi.disconnect(true,true);
+  #else
+    WiFi.persistent(true);
+    WiFi.disconnect(true);
+    WiFi.persistent(false);
+    //xoá các config cũ trong ESP !!!
+    //WiFi.disconnect();//will erase ssid/password
+    ESP.eraseConfig();
+    delay(3000);
+  #endif
+}
+```
