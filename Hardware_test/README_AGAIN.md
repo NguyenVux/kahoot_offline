@@ -23,8 +23,8 @@ https://www.youtube.com/watch?v=GG8JtFNiHw0 thấy cũng được đó :v nhưng
 - Sử dụng broadcast để spam MAC address ESP-32 trong 1s.
 - ESP-8266 nhận được broadcast kèm theo thời gian spam của ESP-32. Ngưng không nhận nữa, đợi ESP-32 spam xong.
 
-
-``` <b>IMPORTANT CODE </b>
+<b>IMPORTANT CODE </b>
+``` c++
 void resetSettings() {
   //WiFi_enableSTA(true,true); // must be sta to disconnect erase
   WiFi.mode(WIFI_STA);
