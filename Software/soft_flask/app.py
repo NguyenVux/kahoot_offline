@@ -89,7 +89,7 @@ def updatePlayer():
         correct = quest['correct'][0]
         socketio.emit('questionOver',(playerData,correct))
 
-kc = kahoot_connect('COM4',updatePlayer)
+kc = kahoot_connect('COM7',updatePlayer)
 
 kc.start()
 

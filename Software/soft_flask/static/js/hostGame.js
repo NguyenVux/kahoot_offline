@@ -4,6 +4,8 @@ var params = jQuery.deparam(window.location.search); //Gets the id from url
 
 var timer;
 
+var question = 1;
+
 var time = 20;
 var is_question_over = false;
 
@@ -19,6 +21,8 @@ socket.on('noGameFound', function () {
 });
 
 socket.on('gameQuestions', function (data) {
+    document.getElementById("questionNum").innerHTML = "Question " + question + " / x";
+    question+=1;
     document.getElementById('question').innerHTML = data.q1;
     document.getElementById('answer1').innerHTML = data.a1;
     document.getElementById('answer2').innerHTML = data.a2;
@@ -88,10 +92,10 @@ socket.on('questionOver', function (playerData, correct) {
     }
 
     //Gets values for graph
-    answer1 = answer1 / total * 100;
-    answer2 = answer2 / total * 100;
-    answer3 = answer3 / total * 100;
-    answer4 = answer4 / total * 100;
+    answer1 = (answer1 / total) * 100;
+    answer2 = (answer2 / total) * 100;
+    answer3 = (answer3 / total) * 100;
+    answer4 = (answer4 / total) * 100;
 
     document.getElementById('square1').style.display = "inline-block";
     document.getElementById('square2').style.display = "inline-block";
