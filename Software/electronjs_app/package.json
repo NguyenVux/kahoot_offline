@@ -1,0 +1,26 @@
+{
+  "name": "electronjs_app",
+  "version": "1.0.0",
+  "description": "NodeJS version of soft_flask",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NguyenVux/kahoot_offline.git"
+  },
+  "keywords": [
+    "\\"
+  ],
+  "author": "NguyenVux,QuocAnh,HongPhuc",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NguyenVux/kahoot_offline/issues"
+  },
+  "homepage": "https://github.com/NguyenVux/kahoot_offline#readme",
+  "dependencies": {
+    "electron": "^12.0.5",
+    "serialport": "^9.0.7"
+  }
+}
