@@ -7,7 +7,11 @@
 #include "node_lib.h"
 void setup()
 {
+    uint32_t start = millis();
     InitSys();
+    uint32_t end = millis();
+    Serial.print("boot time: ");
+    Serial.println(end-start,DEC);
 }
 
 void loop()
