@@ -18,7 +18,7 @@
   "bugs": {
     "url": "https://github.com/NguyenVux/kahoot_offline/issues"
   },
-  "homepage": "https://github.com/NguyenVux/kahoot_offline#readme",
+  "homepage": "https://github.com/NguyenVux/kahoot_offline/edit/dev/Software/electronjs_app#readme",
   "dependencies": {
     "electron": "^12.0.5",
     "serialport": "^9.0.7"
