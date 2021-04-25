@@ -1,6 +1,7 @@
 # Document for 
 
 ### **To install all package in package.json run this command:**
+#### Node version - v14.16.1
 ```
     $ npm install
 ```
