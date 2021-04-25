@@ -141,7 +141,7 @@ if __name__ == '__main__':
     kc.start()
 
     while(1):
-        sleep(0.1)
+       # sleep(0.1)
         data = kc.readData()
         if(data != {}):
             print(len(data))
