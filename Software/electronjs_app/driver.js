@@ -1,14 +1,34 @@
 const SerialPort = require('serialport')
-const load_setting = require('./util.js').load_setting
 const Delimiter = require('@serialport/parser-delimiter')
-const config = load_setting("driver_config.json")
+
+const Event = require('events')
+const config = require("./util").load_setting("driver_config.json")
+
+
+
+
 
 if(config === undefined) 
     process.exit(-1)
-
 const port = SerialPort(config.port,{baudRate: config.baudRate})
-const ESP32_parser = port.pipe(new Delimiter({ delimiter: config.delimiter }))
+const parser = port.pipe(new Delimiter({ delimiter: config.delimiter }))
 
 
 
-module.exports = parser
+function data_parser(data)
+{
+    let data_object = {
+        mac_addr: `${data[0]}:${data[1]}:${data[2]}:${data[3]}:${data[4]}:${data[5]}`
+    }
+    return data_object
+}
+
+
+
+dataEvent = new Event()
+parser.on("data",(data)=>
+{
+    dataEvent.emit("data",data_parser(data))
+})
+
+module.exports = dataEvent

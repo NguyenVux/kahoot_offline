@@ -10,5 +10,5 @@
 ```javascript
     const driver = require("./driver.js") // Import driver
 
-    driver.on("data",callback) // add handler when there is incoming data
+    driver.on("data",callback(data)) // add handler when there is incoming data
 ```
