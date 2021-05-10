@@ -5,7 +5,9 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "run" : "node app.js"
+    "rebuild" :"node_modules\\.bin\\electron-rebuild.cmd",
+    "electron": "electron .",
+    "start": "electron ."
   },
   "repository": {
     "type": "git",
@@ -22,6 +24,9 @@
   "homepage": "https://github.com/NguyenVux/kahoot_offline/edit/dev/Software/electronjs_app#readme",
   "dependencies": {
     "electron": "^12.0.5",
-    "serialport": "^9.0.7"
+    "serialport": "9.0.7"
+  },
+  "devDependencies": {
+    "electron-rebuild": "^2.3.5"
   }
 }

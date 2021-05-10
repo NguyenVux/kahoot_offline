@@ -1,6 +1,28 @@
-const data = require("./driver")
+const { create } = require('domain')
+const { app, BrowserWindow, ipcMain} = require('electron')
+const path = require('path')
+const driver = require("./driver")
 
-data.on("data",async (e)=>
+function create_window()
 {
-    console.log((e));
+  return new BrowserWindow({
+    webPreferences: {
+      contextIsolation: false,
+      nodeIntegration: true,
+      preload: path.join(__dirname,"preload.js")
+    }
+  })
+}
+
+
+app.once("ready",()=>
+{
+  const window = create_window();
+  window.loadFile("index.html")
+  window.webContents.on("devtools-opened", (event) => { 
+    event.preventDefault();
+    window.webContents.closeDevTools(); 
+  });
 })
+
+app.allowRendererProcessReuse = false

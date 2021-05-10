@@ -12,3 +12,13 @@
 
     driver.on("data",callback(data)) // add handler when there is incoming data
 ```
+### **driver_config.json**
+```json
+    {
+        "port":"COM5", // port name: 
+        "baudRate": 115200, //baudrate speed
+        "delimiter": [170,10] //Array of delimiter
+    }
+```
+
+### **Edit main UI script in UI.js**
