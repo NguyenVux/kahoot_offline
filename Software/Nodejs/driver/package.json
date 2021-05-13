@@ -1,0 +1,10 @@
+{
+  "name": "esp32_driver",
+  "version": "1.0.0",
+  "description": "",
+  "main": "driver.js",
+  "scripts": {
+  },
+  "author": "Viktor Nguyen",
+  "license": "ISC"
+}
