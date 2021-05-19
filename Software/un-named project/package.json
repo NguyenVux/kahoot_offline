@@ -1,0 +1,21 @@
+{
+  "name": "waiting-to-name",
+  "version": "dev-1.0.0",
+  "main": "main.js",
+  "repository": "https://github.com/NguyenVux/kahoot_offline",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "rebuild": ".\\node_modules\\.bin\\electron-rebuild.cmd"
+  },
+  "engines": {
+    "node": "14.16.1"
+  },
+  "dependencies": {
+    "serialport": "^9.0.7"
+  },
+  "devDependencies": {
+    "electron": "^12.0.8",
+    "electron-rebuild": "^2.3.5"
+  }
+}

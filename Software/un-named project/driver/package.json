@@ -1,0 +1,14 @@
+{
+  "name": "esp32_driver",
+  "version": "1.0.0",
+  "description": "",
+  "main": "driver.js",
+  "engines": {
+    "node": "14.16.1"
+  },
+  "author": "Viktor Nguyen",
+  "license": "ISC",
+  "dependencies": {
+    "serialport": "^9.0.7"
+  }
+}
