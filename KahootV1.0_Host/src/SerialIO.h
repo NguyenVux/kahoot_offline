@@ -1,6 +1,7 @@
 #ifndef _SERIAL_IO_
 #define _SERIAL_IO_
 #include <header.h>
+#include <./State/StateBase.h>
 
 /*
     Since the Serial buffers only hold up to 64 bytes by default, the request message must shorter than 64 bytes.
@@ -19,7 +20,7 @@
 
 struct SerialHeader
 {
-    State::state_t changeState;
+    state_t changeState;
     bool resetState;
 };
 

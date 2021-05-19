@@ -6,7 +6,6 @@
 #include <Led.h>
 #include <Stopwatch.h>
 #include <Util.h>
-#include <StateBase.h>
 
 #define DEFAULT_CHANNEL 0
 

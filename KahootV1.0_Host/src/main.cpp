@@ -1,6 +1,6 @@
 #include <header.h>
-#include <StatePairing.h>
 #include <SerialIO.h>
+#include <./State/State.h>
 Led main_led(2);
 State state;
 
@@ -32,6 +32,7 @@ void loop()
     {
       state.setCurState(header.changeState);
       //TODO: Handle fallback if reset state failed
+      //31.3.2021: ALWAYS RESET STATE TO SET SEND/RECV CALLBACK FUNCTION
       if (header.resetState)
       {
         state.resetCurState();
