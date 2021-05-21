@@ -2,15 +2,20 @@
 #include <WiFi.h>
 #include <esp_now.h>
 
-#define _DEBUG_
-#define _BTSERIAL_
-#include <SerialLog.h>
 // Only one file is allowed to include TaskScheduler
 #define _TASK_STATUS_REQUEST
 #include "TaskScheduler.h"
 
 #include "Beacon.h"
 #include "Packet.h"
+
+#define _DEBUG_
+// #define _BTSERIAL_
+#include "SerialLog.h"
+#ifdef _BTSERIAL_
+// Define SerialBT here for extern in SerialLog.h
+BluetoothSerial SerialBT;
+#endif
 
 int generatePassword();
 void onRecv(const uint8_t *mac_addr, const uint8_t *data, int data_len);
@@ -41,25 +46,28 @@ void setup()
   esp_now_register_recv_cb(&onRecv);
 
   unsigned long broadcast_interval = 1000 * TASK_MILLISECOND;
-  PRINTF("[INFO] Password: %d", broadcastData.password);
+  PRINTF("[INFO] Password: %d\n", broadcastData.password);
   beacon::init(broadcast_interval, &scheduler, &broadcastPeer, (uint8_t *)&broadcastData, sizeof(broadcastData));
 
   beacon::task.enable();
+
+  generatePassword();
 }
 
 void loop()
 {
   scheduler.execute();
-  PRINTLN("bluetooth");
 }
 
 // Generate 4 digits password
 int generatePassword()
 {
-  randomSeed(analogRead(0));
+  randomSeed(micros());
   int password = 0;
-  for (int i = 1; i <= 4; i++)
-    password += random(1, 5) * i; // Only generate 1 to 4
+  for (int i = 0; i < 4; i++)
+  {
+    password += random(1, 5) * pow(10, i);
+  }
   return password;
 }
 

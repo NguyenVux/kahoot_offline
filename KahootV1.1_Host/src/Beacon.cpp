@@ -11,7 +11,7 @@ namespace beacon
               uint8_t *data, size_t len)
     {
         peer = peer_info;
-        task.set(interval, -1, emit, onEnable, onDisable);
+        task.set(interval, TASK_FOREVER, emit, onEnable, onDisable);
 
         beacon::data = data;
         beacon::len = len;
@@ -22,11 +22,6 @@ namespace beacon
     void emit()
     {
         esp_err_t err = esp_now_send(peer->peer_addr, data, len);
-        if (err == ESP_OK)
-        {
-            // PRINTLN("Beacon");
-            Serial.println("Serial");
-        }
     }
 
     bool onEnable()
