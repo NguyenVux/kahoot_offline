@@ -7,6 +7,7 @@
 enum packet_t : uint8_t
 {
     BEACON = 0,
+    REQ_ADDR,
     RECV_ANSW,
     RESPOND_ANSW,
 };
@@ -18,11 +19,18 @@ struct BasePacket
     BasePacket(packet_t type) : type(type) {}
 };
 
-// Broadcast host address with password
+// Unicast/Broadcast host address with password
 struct BeaconPacket : BasePacket
 {
     int password;
     BeaconPacket(int password) : BasePacket(packet_t::BEACON), password(password) {}
+};
+
+// If for some reason the BeaconPacket 
+struct RequestBeaconPacket : BasePacket
+{
+    int password;
+    RequestBeaconPacket(int password) : BasePacket(packet_t::REQ_ADDR), password(password) {}
 };
 
 // Host receive this from client(s)

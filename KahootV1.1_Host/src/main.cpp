@@ -40,7 +40,7 @@ void setup()
   if (esp_now_init() != ESP_OK)
   {
     PRINTLN("[ERROR] Initialize ESP-NOW failed");
-    return;
+    ESP.restart();
   }
 
   esp_now_register_recv_cb(&onRecv);
