@@ -1,0 +1,11 @@
+{
+  "name": "common",
+  "version": "1.0.0",
+  "description": "",
+  "main": "common.js",
+  "engines": {
+    "node": "14.16.1"
+  },
+  "author": "Viktor Nguyen",
+  "license": "ISC"
+}

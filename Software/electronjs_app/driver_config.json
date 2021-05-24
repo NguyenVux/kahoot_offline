@@ -1,0 +1,5 @@
+{
+    "port":"COM5",
+    "baudRate": 115200,
+    "delimiter": [170,10]
+}

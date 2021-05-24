@@ -4,32 +4,22 @@
 ****/
 
 
-#include "node_lib.h"
+#include "node_lib/node_lib.h"
+#include "light_sleep/light_sleep.h"
 void setup()
 {
-    uint32_t start = millis();
-    InitSys();
-    uint32_t end = millis();
-    Serial.print("boot time: ");
-    Serial.println(end-start,DEC);
+    Serial.begin(115200);
+    Light_sleep_helper::LightSleep.set_wake_up_pin(D5);
+    
 }
 
 void loop()
 {
-    if(mode == PAIRING)
-    {
-        PairMode();
-        flags = false;
-    }
-    else if (flags)
-    { 
-        delay(10);
-        check();
-        setInterrupt();
-        flags = false;
-    }
-
-    
-    //delay(500);
-    
+    Serial.println("enter LightSleepEEEE");
+    delay(100);
+    Light_sleep_helper::LightSleep.light_sleep();
+    delay(100);
+    Serial.print("Exit LightSleep: ");
+    Serial.println(flags.error,DEC);
+    delay(3000);
 }
