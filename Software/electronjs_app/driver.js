@@ -14,7 +14,6 @@ if (config === undefined)
 const port = SerialPort(config.port, { baudRate: config.baudRate })
 const parser = port.pipe(new Delimiter({ delimiter: config.delimiter }))
 
-
 function logBase2(bits)
 {
     let count = 0;

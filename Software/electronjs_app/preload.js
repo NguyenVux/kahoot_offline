@@ -1,12 +1,10 @@
-window.addEventListener('DOMContentLoaded', () => {
-  const replaceText = (selector, text) => {
-    const element = document.getElementById(selector)
-    if (element) element.innerText = text
-  }
+const { contextBridge, ipcRenderer } = require("electron");
 
-  for (const type of ['chrome', 'node', 'electron']) {
-    replaceText(`${type}-version`, process.versions[type])
-  }
-})
-
-window.hello = ()=>{console.log("hello")}
+contextBridge.exposeInMainWorld("ipcAPIs", {
+  on_driver_data: (callback) =>
+    ipcRenderer.on("driver_data", (e, data) => {
+      callback(data);
+    }),
+  next_question: ()=> {ipcRenderer.send('asynchronous-message', 'ping')}
+});
+  

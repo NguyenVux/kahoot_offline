@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "node_lib.h": "c",
+        "esp8266wifi.h": "c"
+    }
+}
