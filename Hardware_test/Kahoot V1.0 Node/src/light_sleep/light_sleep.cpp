@@ -10,7 +10,7 @@ void Light_sleep_helper::light_sleep()
     wifi_set_opmode(NULL_MODE);
     wifi_fpm_set_sleep_type(LIGHT_SLEEP_T);
     wifi_fpm_open();
-    if(!_callback)  wifi_fpm_set_wakeup_cb(_callback);
+    if(_callback)  wifi_fpm_set_wakeup_cb(_callback);
     wifi_fpm_do_sleep(FPM_SLEEP_MAX_TIME);
 }
 
